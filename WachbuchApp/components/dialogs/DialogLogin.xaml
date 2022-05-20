@@ -1,0 +1,66 @@
+﻿<Window x:Class="WachbuchApp.DialogLogin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="clr-namespace:WachbuchApp"
+        
+        Height="400" Width="500" 
+        AllowsTransparency="True" WindowStyle="None" Background="White"
+        
+        Icon="../../resources/ic_launcher.ico" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" SizeToContent="Height"
+        Loaded="Window_Loaded" Closing="Window_Closing">
+    <Window.Resources>
+        <Storyboard x:Key="AnimationWrongShake" TargetProperty="Margin">
+            <ThicknessAnimation From="-5,0,5,0" To="5,0,-5,0" Duration="0:0:0.08"
+                                     AutoReverse="True" RepeatBehavior="2x"
+                                     FillBehavior="Stop" />
+        </Storyboard>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35" />
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50" />
+        </Grid.RowDefinitions>
+
+        <!-- Titlebar -->
+        <l:ControlWindowTitlebar Title="{StaticResource DialogLogin_Title}" ExitButtonClick="Window_Titlebar_Exited" />
+
+        <!-- Content -->
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.ColumnSpan="2" Margin="20">
+
+            <TextBlock Name="txtMessage" Margin="0, 0, 0, 10" TextWrapping="Wrap" Style="{StaticResource Body}" />
+
+            <!-- Benutzername -->
+            <TextBlock Text="{StaticResource DialogLogin_LabelUsername}" Style="{StaticResource Label}" />
+            <TextBox Name="textUsername" Text=""  HorizontalAlignment="Stretch" TextChanged="DialogInput_TextChanged" KeyDown="DialogInput_KeyDown" />
+
+            <!-- Passwort -->
+            <TextBlock Text="{StaticResource DialogLogin_LabelPassword}" Style="{StaticResource Label}" Margin="0,15,0,0" />
+            <PasswordBox Name="textPassword" HorizontalAlignment="Stretch" PasswordChanged="DialogInput_TextChanged" KeyDown="DialogInput_KeyDown" />
+
+        </StackPanel>
+
+        <!-- DialogButtonPanel -->
+        <DockPanel Grid.Row="3" Grid.ColumnSpan="2" LastChildFill="False" Background="WhiteSmoke" SnapsToDevicePixels="True">
+            <Rectangle Fill="LightGray" Height="1" DockPanel.Dock="Top" />
+            <Button Name="btnLogin" Click="BtnLogin_Click" Content="{StaticResource Common_Button_Login}" DockPanel.Dock="Right" Width="200" Margin="5" />
+            <Button Name="btnCancel" Click="BtnCancel_Click" Content="{StaticResource Common_Button_Cancel}" DockPanel.Dock="Left" Width="80" Margin="5" />
+        </DockPanel>
+
+        <!-- Overlay: Dialoge -->
+        <Grid Name="overlayDialog" Grid.RowSpan="9" Grid.ColumnSpan="9" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Rectangle Fill="#ccffffff" Grid.Row="1" />
+            <Rectangle Fill="#77000000" Grid.Row="0" />
+        </Grid>
+        <StackPanel Name="overlayProgress" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Grid.ColumnSpan="9" Grid.RowSpan="9" Visibility="Collapsed">
+            <ProgressBar Height="20" Width="150" IsIndeterminate="True" />
+            <TextBlock  Text="{StaticResource DialogLogin_Progress}" Style="{StaticResource Subhead}" TextAlignment="Center" Margin="0,5,0,0" />
+        </StackPanel>
+
+        <Border BorderBrush="#000000" BorderThickness="1,0,1,1" Grid.Row="1" Grid.RowSpan="3" />
+    </Grid>
+</Window>

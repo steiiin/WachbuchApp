@@ -1,0 +1,127 @@
+﻿<ResourceDictionary 
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:s="clr-namespace:System;assembly=mscorlib"
+  xml:space="preserve">
+
+    
+    <!-- MainWindow -->
+    <s:String x:Key="MainWindow_Title">Wachbuch &amp; Besatzungen</s:String>
+
+    <s:String x:Key="MainWindow_ErrorConnection_Title">Keine Verbindung zu VivendiPep</s:String>
+    <s:String x:Key="MainWindow_ErrorConnection_FlyoutMessage">Der aktuelle Dienstplan konnte nicht abgerufen werden, weil keine Verbindung zu VivendiPep aufgebaut werden konnte.&#13;Im Zwischenspeicher befindet sich noch eine Version, die aber vor ein paar Stunden oder Tagen geladen wurde.&#13;Das erstellte Wachbuch könnte veraltet sein.</s:String>
+    <s:String x:Key="MainWindow_ErrorConnection_FullMessage">Der aktuelle Dienstplan konnte nicht abgerufen werden, weil keine Verbindung zu VivendiPep aufgebaut werden konnte.&#13;Auch im Zwischenspeicher ist keine ältere Version. Das Wachbuch kann deshalb nicht erstellt werden.</s:String>
+    
+    <s:String x:Key="MainWindow_ErrorServer_Title">Probleme mit VivendiPep</s:String>
+    <s:String x:Key="MainWindow_ErrorServer_FlyoutMessage">Der aktuelle Dienstplan konnte nicht abgerufen werden, weil die Schnittstelle zu VivendiPep derzeit nicht funktioniert.&#13;Im Zwischenspeicher befindet sich noch eine Version, die aber vor ein paar Stunden oder Tagen geladen wurde.&#13;Das erstellte Wachbuch könnte veraltet sein.</s:String>
+    <s:String x:Key="MainWindow_ErrorServer_FullMessage">Der aktuelle Dienstplan konnte nicht abgerufen werden, weil die Schnittstelle zu VivendiPep derzeit nicht funktioniert.&#13;Auch im Zwischenspeicher ist keine ältere Version. Das Wachbuch kann deshalb nicht erstellt werden.</s:String>
+    
+    <s:String x:Key="MainWindow_ErrorCredentials_Title">Nicht mehr angemeldet</s:String>
+    <s:String x:Key="MainWindow_ErrorCredentials_FlyoutMessage">Der aktuelle Dienstplan konnte nicht abgerufen werden, weil du nicht mehr bei VivendiPep angemeldet werden konntest.&#13;Im Zwischenspeicher befindet sich noch eine Version, die aber vor ein paar Stunden oder Tagen geladen wurde.&#13;Das erstellte Wachbuch könnte veraltet sein.</s:String>
+    <s:String x:Key="MainWindow_ErrorCredentials_FullMessage">Der aktuelle Dienstplan konnte nicht abgerufen werden, weil du nicht mehr bei VivendiPep angemeldet werden konntest.&#13;Auch im Zwischenspeicher ist keine ältere Version. Das Wachbuch kann deshalb nicht erstellt werden.</s:String>
+    
+    <s:String x:Key="MainWindow_BookHandler_WarnExceed">Im Wachbuch wurden mehr als 3 Mitarbeiter hinterlegt.</s:String>
+    
+    <s:String x:Key="MainWindow_Error_ScreenComp">Der Bildschirm ist nicht mit diesem Programm kompatibel.</s:String>
+    
+    <s:String x:Key="MainWindow_Action_PrintOnly">Wachbuch drucken</s:String>
+    <s:String x:Key="MainWindow_Action_PrintClose">Wachbuch drucken &amp; Schließen</s:String>
+    <s:String x:Key="MainWindow_Action_ExportPrivate">Eigenen Dienstplan öffnen</s:String>
+    <s:String x:Key="MainWindow_Action_LogoutPrivate">Abmelden</s:String>
+    <s:String x:Key="MainWindow_Action_PrintPrivate">Eigenen Dienstplan drucken</s:String>
+    <s:String x:Key="MainWindow_Action_SavePrivate">Eigenen Dienstplan als PDF speichern</s:String>
+    <s:String x:Key="MainWindow_Action_IcalSave">Kalender erstellen (für Google/iCalendar/...)</s:String>
+    <s:String x:Key="MainWindow_Action_SendPrivate">Dienstplan per E-Mail versenden</s:String>
+    
+    <s:String x:Key="MainWindow_Progress_Print1">Vorbereiten ...</s:String>
+    <s:String x:Key="MainWindow_Progress_Print2">Wird gedruckt ...</s:String>
+    <s:String x:Key="MainWindow_Progress_Saving">Wird gespeichert ...</s:String>
+    
+    <s:String x:Key="MainWindow_PlanHandler_Title">Eigener Dienstplan</s:String>
+    <s:String x:Key="MainWindow_Private_Error">Beim Abrufen deiner persönlichen Daten ist ein Fehler aufgetreten. Da deine eigenen Daten nicht gespeichert werden, musst du es später erneut probieren.</s:String>
+    
+    <s:String x:Key="MainWindow_ErrorExport_Print_Msg">Beim Drucken des Wachbuchs ist ein Fehler aufgetreten. Prüfe, ob der Drucker funktioniert - sonst melde es dem IT-Verantwortlichen.</s:String>
+    <s:String x:Key="MainWindow_ErrorExport_PrintClose_Msg">Beim Drucken des Wachbuchs ist ein Fehler aufgetreten. Prüfe, ob der Drucker funktioniert - sonst melde es dem IT-Verantwortlichen.&#13;&#13;Willst du es nochmal probieren?</s:String>
+    <s:String x:Key="MainWindow_ExportSuccess_Print">Das Wachbuch wurde erfolgreich an den Drucker gesendet.</s:String>
+    
+    <s:String x:Key="MainWindow_ErrorExport_Private_Print_Msg">Beim Drucken deines Dienstplans ist ein Fehler aufgetreten. Prüfe, ob der Drucker funktioniert - sonst melde es dem IT-Verantwortlichen.</s:String>
+    <s:String x:Key="MainWindow_ExportSuccess_Private_Print_Msg">Dein Dienstplan wurde erfolgreich an den Drucker gesendet.</s:String>
+    <s:String x:Key="MainWindow_ErrorExport_Private_Save_Msg">Beim Speichern deines Dienstplans ist ein Fehler aufgetreten. Schau, ob du dort, wo du wolltest, speichern darfst - Sonst melde es dem IT-Verantwortlichen.</s:String>
+    <s:String x:Key="MainWindow_ExportSuccess_Private_Save_Msg">Dein Dienstplan wurde erfolgreich gespeichert.</s:String>
+    <s:String x:Key="MainWindow_ErrorExport_Private_Send_Msg">Beim Versenden deines Dienstplans (als Pdf und iCal) ist ein Fehler aufgetreten. Evtl. gibt es ein Problem mit Outlook - ansonsten melde es dem IT-Verantwortlichen.</s:String>
+    <s:String x:Key="MainWindow_ExportSuccess_Private_Send_Msg">Dein Dienstplan wurde erfolgreich gesendet. Da dafür erst Outlook im Hintergrund geöffnet und die E-Mail erstellt wird, kann es ein paar Minuten dauern, bis die E-Mail bei dir ankommt.</s:String>
+    
+    <s:String x:Key="MainWindow_Export_Private_Send_InputMsg">Gib bitte eine E-Mailadresse an, an die du deinen Dienstplan senden möchtest.</s:String>
+    <s:String x:Key="MainWindow_Export_Private_Send_InputLabel">E-Mailadresse</s:String>
+    <s:String x:Key="MainWindow_Export_Private_Send_EmailText">Hallo,&#13;&#13;anbei der Dienstplan &lt;{0}&gt; von &#13;&#13;{1}, {2}&#13;&#13;MfG</s:String>
+    
+    
+    <!-- Dialog: Login -->
+    <s:String x:Key="DialogLogin_Title">Anmelden bei VivendiPep</s:String>
+    <s:String x:Key="DialogLogin_LabelUsername">Benutzername</s:String>
+    <s:String x:Key="DialogLogin_LabelPassword">Passwort</s:String>
+    
+    <s:String x:Key="DialogLogin_Progress">Anmeldung läuft ...</s:String>
+    <s:String x:Key="DialogLogin_ExitNag_Title">Anmeldung abbrechen?</s:String>
+    
+    <s:String x:Key="DialogLogin_Error_Title">Fehler bei der Anmeldung</s:String>
+    <s:String x:Key="DialogLogin_Error_Connection">Die Anmeldung konnte nicht durchgeführt werden, weil es ein Problem mit der Internetverbindung gibt.&#13;&#13;Bitte probiere es später erneut oder&#13;frage den IT-Verantwortlichen, ob er Lust hat dir zu helfen.</s:String>
+    <s:String x:Key="DialogLogin_Error_Server">Bei der Anmeldung ist ein Fehler aufgetreten.&#13;Wahrscheinlich spinnt das VivendiPep mal wieder rum.&#13;&#13;Bitte probier es später nochmal.</s:String>
+    
+    <s:String x:Key="DialogLogin_Message_Public">Die Anmeldung ist mit den hinterlegten Zugangsdaten nicht mehr möglich.&#13;Benutze bitte deinen eigenen Benutzernamen und Passwort für VivendiPep, um das Wachbuch ordnungsgemäß zu erstellen.</s:String>
+    <s:String x:Key="DialogLogin_Message_Private">Um auf deinen eigenen Dienstplan zuzugreifen, musst du dich mit deinen eigenen Daten erneut anmelden.</s:String>
+    
+    <s:String x:Key="DialogLogin_ExitNag_Public">Wenn du dich nicht erneut anmeldest können keine neuen Dienstpläne von VivendiPep geladen werden.&#13;Die Wachbücher könnten veraltet sein, oder gar nicht mehr erstellt werden.&#13;&#13;Willst du dich wirklich nicht anmelden?</s:String>
+    <s:String x:Key="DialogLogin_ExitNag_Private">Wenn du dich nicht anmeldest, kann dein persönlicher Dienstplan nicht abgerufen werden.&#13;&#13;Willst du dich wirklich nicht anmelden?</s:String>
+    
+    
+    <!-- Dialog: EditEmployee -->
+    <s:String x:Key="DialogEditEmployee_Title">Mitarbeiter ändern</s:String>
+    <s:String x:Key="DialogEditEmployee_Dialog_QualiUnknown">Qualifikation unbekannt?</s:String>
+    <s:String x:Key="DialogEditEmployee_Dialog_EmptyEntry">Keine Eingabe</s:String>
+    
+    <s:String x:Key="DialogEditEmployee_GroupSelection_Header">Was soll geändert werden?</s:String>
+    <s:String x:Key="DialogEditEmployee_GroupSelection_RadioQuali">Qualifikation des Mitarbeiters</s:String>
+    <s:String x:Key="DialogEditEmployee_GroupSelection_RadioEntryText">Eintrag im Wachbuch</s:String>
+    
+    <s:String x:Key="DialogEditEmployee_GroupQuali_Header">Qualifikation des Mitarbeiters ändern</s:String>
+    <s:String x:Key="DialogEditEmployee_GroupEntryText_Header">Eintrag im Wachbuch ändern</s:String>
+    
+    
+    <!-- Dialog: EditVehicle -->
+    <s:String x:Key="DialogEditVehicle_Title">Fahrzeug ändern</s:String>
+    <s:String x:Key="DialogEditVehicle_GroupVehicle_Header">Fahrzeug für Dienst ändern</s:String>
+    
+    <!-- Dialog: AdminMenu -->
+    <s:String x:Key="DialogAdminMenu_Title">Administration</s:String>
+    <s:String x:Key="DialogAdminMenu_Action_MissingQuali">Fehlende Mitarbeiterqualifikationen eintragen</s:String>
+    <s:String x:Key="DialogAdminMenu_Action_HardExit">Anwendung komplett beenden</s:String>
+    
+    
+    <!-- StandardTexte -->
+    <s:String x:Key="Common_Button_Ok">OK</s:String>
+    <s:String x:Key="Common_Button_Login">Anmelden</s:String>
+    <s:String x:Key="Common_Button_Cancel">Abbrechen</s:String>
+    <s:String x:Key="Common_Button_Back">Zurück</s:String>
+    <s:String x:Key="Common_Button_Save">Speichern</s:String>
+    <s:String x:Key="Common_Button_ExitNag_Yes">Ja, abbrechen</s:String>
+    <s:String x:Key="Common_Button_ExitNag_No">Nein, zurück</s:String>
+    <s:String x:Key="Common_Button_Retry">Nochmal&#13;Versuchen</s:String>
+    <s:String x:Key="Common_Button_Ignore">Egal</s:String>
+    <s:String x:Key="Common_Button_DeleteEntry">Eintrag löschen</s:String>
+    
+    <s:String x:Key="Common_Dialog_ExitNag_Title">Abbrechen?</s:String>
+    <s:String x:Key="Common_Dialog_ExitNag">Die Änderungen gehen verloren.&#13;Wirklich abbrechen?</s:String>
+    
+    <s:String x:Key="Common_Dialog_NoneChanged">Keine Änderungen</s:String>
+    
+    
+    <!-- StatusBar -->
+    <s:String x:Key="Status_OK">BEREIT</s:String>
+    <s:String x:Key="Status_Load">WARTE ...</s:String>
+    <s:String x:Key="Status_Login">NEU ANMELDEN ...</s:String>
+    <s:String x:Key="Status_NoData">KEINE DIENSTPLAN-DATEN</s:String>
+    <s:String x:Key="Status_OldData">ALTE DATEN - LETZTER ABRUF: {0}</s:String>
+    <s:String x:Key="Status_FreshData">AKTUELL</s:String>
+    
+</ResourceDictionary>

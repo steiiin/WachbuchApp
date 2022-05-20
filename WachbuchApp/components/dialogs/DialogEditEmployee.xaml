@@ -1,0 +1,70 @@
+﻿<Window x:Class="WachbuchApp.DialogEditEmployee"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="clr-namespace:WachbuchApp"
+        
+        Title="{StaticResource DialogEditEmployee_Title}" Height="600" Width="500" 
+        AllowsTransparency="True" WindowStyle="None" Background="White"
+        
+        Icon="../../resources/ic_launcher.ico" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" SizeToContent="Height"
+        Loaded="Window_Loaded" Closing="Window_Closing">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35" />
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50" />
+        </Grid.RowDefinitions>
+
+        <!-- Titlebar -->
+        <l:ControlWindowTitlebar Title="{StaticResource DialogEditEmployee_Title}" ExitButtonClick="Window_Titlebar_Exited" />
+
+        <!-- Content -->
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.ColumnSpan="2" Margin="20">
+
+            <!-- Group: Auswahl der Bearbeitungsoption -->
+            <GroupBox Name="groupSelection" Header="{StaticResource DialogEditEmployee_GroupSelection_Header}" Padding="5" Margin="0,0,0,10">
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <RadioButton Name="radioQuali" Content="{StaticResource DialogEditEmployee_GroupSelection_RadioQuali}" VerticalContentAlignment="Center" Padding="8" Checked="RadioQuali_Checked" />
+                    <RadioButton Name="radioEntryText" Content="{StaticResource DialogEditEmployee_GroupSelection_RadioEntryText}" VerticalContentAlignment="Center" Padding="8" Checked="RadioEntryText_Checked" />
+                </StackPanel>
+            </GroupBox>
+
+            <!-- Group: Option .. Qualifikation -->
+            <GroupBox Name="groupQuali" Header="{StaticResource DialogEditEmployee_GroupQuali_Header}" Padding="5">
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <TextBlock Name="txtQualiEmployeeName" Text="[Name]" Style="{StaticResource Title}" />
+                    <ComboBox Name="comboQualiSelect" Margin="0,5,0,0" SelectionChanged="ComboQualiSelect_SelectionChanged">
+                    </ComboBox>
+                </StackPanel>
+            </GroupBox>
+
+            <!-- Group: Option .. EntryText -->
+            <GroupBox Name="groupName" Header="{StaticResource DialogEditEmployee_GroupEntryText_Header}" Padding="5">
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <TextBox Name="textBookEntry" HorizontalAlignment="Stretch" TextChanged="TextBookEntry_TextChanged" />
+                    <Button Name="btnBookEntryClear" Content="{StaticResource Common_Button_DeleteEntry}" HorizontalAlignment="Right" Margin="0,5,0,0" Click="BtnBookEntryClear_Click" />
+                </StackPanel>
+            </GroupBox>
+
+        </StackPanel>
+
+        <!-- DialogButtonPanel -->
+        <DockPanel Grid.Row="3" Grid.ColumnSpan="2" LastChildFill="False" Background="WhiteSmoke" SnapsToDevicePixels="True">
+            <Rectangle Fill="LightGray" Height="1" DockPanel.Dock="Top" />
+            <Button Name="btnSave" Content="{StaticResource Common_Button_Save}" DockPanel.Dock="Right" Width="200" Margin="5" Click="BtnSave_Click" IsDefault="True" />
+            <Button Name="btnCancel" Content="{StaticResource Common_Button_Cancel}" DockPanel.Dock="Left" Width="80" Margin="5" Click="BtnCancel_Click" />
+        </DockPanel>
+
+        <!-- Overlay: Dialoge -->
+        <Grid Name="overlayDialog" Grid.RowSpan="9" Grid.ColumnSpan="9" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Rectangle Fill="#ccffffff" Grid.Row="1" />
+            <Rectangle Fill="#77000000" Grid.Row="0" />
+        </Grid>
+
+        <Border BorderBrush="#000000" BorderThickness="1,0,1,1" Grid.Row="1" Grid.RowSpan="3" />
+    </Grid>
+</Window>

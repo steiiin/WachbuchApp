@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="WachbuchApp.ControlMessageField"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel>
+
+        <!-- MessageIcon -->
+        <Image Name="iconError" Source="../../resources/ic_msg_error.png" Width="40" DockPanel.Dock="Left" Margin="10" Stretch="Uniform" />
+        <Image Name="iconWarn" Source="../../resources/ic_msg_warn.png" Width="40" DockPanel.Dock="Left" Margin="10" Stretch="Uniform" />
+        <Image Name="iconInfo" Source="../../resources/ic_msg_info.png" Width="40" DockPanel.Dock="Left" Margin="10" Stretch="Uniform" />
+        <Image Name="iconQuestion" Source="../../resources/ic_msg_question.png" Width="40" DockPanel.Dock="Left" Margin="10" Stretch="Uniform" />
+
+        <!-- ActionButton -->
+        <Button Name="btnAction" Content="" DockPanel.Dock="Right" Margin="10" VerticalAlignment="Center" Click="BtnAction_Click" />
+        
+        <!-- MessageText -->
+        <StackPanel Orientation="Vertical" Margin="0,10,10,10" VerticalAlignment="Center">
+            <TextBlock Name="txtTitle" Style="{StaticResource Headline}" />
+            <TextBlock Name="txtMessage" Style="{StaticResource Body}" TextWrapping="Wrap" />
+        </StackPanel>
+
+    </DockPanel>
+</UserControl>

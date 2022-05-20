@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+	<style type="text/css">
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+		}
+
+		* {
+			box-sizing: border-box;
+		}
+
+		.page {
+			width: 210mm;
+			height: 297mm;
+			margin: 0 auto;
+			position: relative;
+		}
+
+		@page {
+			size: 210mm 297mm;
+			margin: 0;
+		}
+
+		table, thead {
+			border: 0.75mm solid black;
+			border-collapse: collapse;
+		}
+
+			table tr.b2 {
+				border-bottom: 0.75mm solid black;
+			}
+
+			table tr.b1 {
+				border-bottom: 0.1mm solid black;
+			}
+
+			table td.r2 {
+				border-right: 0.75mm solid black;
+			}
+
+			table td.r1 {
+				border-right: 0.1mm solid black;
+			}
+
+			table td.input {
+				font-size: 3.4mm;
+				font-weight: 700;
+				padding-left: 1.32mm;
+				white-space: nowrap;
+				overflow: hidden;
+			}
+
+			table .thead td {
+				text-align: center;
+				font-family: Arial;
+				font-size: 4mm;
+				font-weight: 400;
+				overflow: hidden;
+				white-space: nowrap;
+			}
+
+			table td.left {
+				text-align: left;
+				padding-left: 1.5mm;
+			}
+
+			table td.team {
+				color: #666;
+				text-align: right;
+				padding-right: 1.5mm;
+			}
+
+			#d30 #row31 {
+				display: none;
+			}
+
+        #d29 #row31, #d29 #row30 {
+            display: none;
+        }
+
+        #d28 #row31, #d28 #row30, #d28 #row29 {
+            display: none;
+        }
+			
+	</style>
+
+</head>
+
+<body>
+	<div class="page">
+
+		<div style="font-family: Palatino Linotype; font-size: 5mm;
+					position: absolute; top: 8mm; left:  20mm;"><strong>Dienstplan</strong></div>
+		<div style="font-family: Palatino Linotype; font-size: 5mm; width: 52mm; text-align: right; line-height: 3mm;
+					position: absolute; top: 8mm; right: 8mm;"><span id="doc-date">März 2022</span><br/><span id="doc-created" style="font-size: 3mm;">(Akutalisiert: 212022)</span></div>
+		
+		<div style="position: absolute; top: 16mm; padding: 0 8mm 0 20mm;">
+			
+			<table style="table-layout: fixed; width: 182mm;">
+				<colgroup>
+					<col style="width: 20mm" />
+					<col style="width: 20mm" />
+					<col style="width: 56mm" />
+					<col style="width: 56mm" />
+					<col style="width: 30mm" />
+				</colgroup>
+				<tbody>
+					<tr style="line-height: 7.41mm;" class="thead b2">
+						<td class="r2">Datum</td>
+						<td>Dienst</td>
+						<td>&nbsp;</td>
+						<td class="r2">&nbsp;</td>
+						<td class="r2">Dienstzeit</td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_01" class="r2">01</td>
+						<td id="dshort_01" class="r1"></td>
+						<td id="dlong_01" class="left"></td>
+						<td id="team_01" class="r2 team"></td>
+						<td id="dtimes_01" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_02" class="r2">02</td>
+						<td id="dshort_02" class="r1"></td>
+						<td id="dlong_02" class="left"></td>
+						<td id="team_02" class="r2 team"></td>
+						<td id="dtimes_02" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_03" class="r2">03</td>
+						<td id="dshort_03" class="r1"></td>
+						<td id="dlong_03" class="left"></td>
+						<td id="team_03" class="r2 team"></td>
+						<td id="dtimes_03" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_04" class="r2">04</td>
+						<td id="dshort_04" class="r1"></td>
+						<td id="dlong_04" class="left"></td>
+						<td id="team_04" class="r2 team"></td>
+						<td id="dtimes_04" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_05" class="r2">05</td>
+						<td id="dshort_05" class="r1"></td>
+						<td id="dlong_05" class="left"></td>
+						<td id="team_05" class="r2 team"></td>
+						<td id="dtimes_05" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_06" class="r2">06</td>
+						<td id="dshort_06" class="r1"></td>
+						<td id="dlong_06" class="left"></td>
+						<td id="team_06" class="r2 team"></td>
+						<td id="dtimes_06" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_07" class="r2">07</td>
+						<td id="dshort_07" class="r1"></td>
+						<td id="dlong_07" class="left"></td>
+						<td id="team_07" class="r2 team"></td>
+						<td id="dtimes_07" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_08" class="r2">08</td>
+						<td id="dshort_08" class="r1"></td>
+						<td id="dlong_08" class="left"></td>
+						<td id="team_08" class="r2 team"></td>
+						<td id="dtimes_08" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_09" class="r2">09</td>
+						<td id="dshort_09" class="r1"></td>
+						<td id="dlong_09" class="left"></td>
+						<td id="team_09" class="r2 team"></td>
+						<td id="dtimes_09" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_10" class="r2">10</td>
+						<td id="dshort_10" class="r1"></td>
+						<td id="dlong_10" class="left"></td>
+						<td id="team_10" class="r2 team"></td>
+						<td id="dtimes_10" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_11" class="r2">11</td>
+						<td id="dshort_11" class="r1"></td>
+						<td id="dlong_11" class="left"></td>
+						<td id="team_11" class="r2 team"></td>
+						<td id="dtimes_11" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_12" class="r2">12</td>
+						<td id="dshort_12" class="r1"></td>
+						<td id="dlong_12" class="left"></td>
+						<td id="team_12" class="r2 team"></td>
+						<td id="dtimes_12" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_13" class="r2">13</td>
+						<td id="dshort_13" class="r1"></td>
+						<td id="dlong_13" class="left"></td>
+						<td id="team_13" class="r2 team"></td>
+						<td id="dtimes_13" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_14" class="r2">14</td>
+						<td id="dshort_14" class="r1"></td>
+						<td id="dlong_14" class="left"></td>
+						<td id="team_14" class="r2 team"></td>
+						<td id="dtimes_14" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_15" class="r2">15</td>
+						<td id="dshort_15" class="r1"></td>
+						<td id="dlong_15" class="left"></td>
+						<td id="team_15" class="r2 team"></td>
+						<td id="dtimes_15" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_16" class="r2">16</td>
+						<td id="dshort_16" class="r1"></td>
+						<td id="dlong_16" class="left"></td>
+						<td id="team_16" class="r2 team"></td>
+						<td id="dtimes_16" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_17" class="r2">17</td>
+						<td id="dshort_17" class="r1"></td>
+						<td id="dlong_17" class="left"></td>
+						<td id="team_17" class="r2 team"></td>
+						<td id="dtimes_17" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_18" class="r2">18</td>
+						<td id="dshort_18" class="r1"></td>
+						<td id="dlong_18" class="left"></td>
+						<td id="team_18" class="r2 team"></td>
+						<td id="dtimes_18" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_19" class="r2">19</td>
+						<td id="dshort_19" class="r1"></td>
+						<td id="dlong_19" class="left"></td>
+						<td id="team_19" class="r2 team"></td>
+						<td id="dtimes_19" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_20" class="r2">20</td>
+						<td id="dshort_20" class="r1"></td>
+						<td id="dlong_20" class="left"></td>
+						<td id="team_20" class="r2 team"></td>
+						<td id="dtimes_20" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_21" class="r2">21</td>
+						<td id="dshort_21" class="r1"></td>
+						<td id="dlong_21" class="left"></td>
+						<td id="team_21" class="r2 team"></td>
+						<td id="dtimes_21" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_22" class="r2">22</td>
+						<td id="dshort_22" class="r1"></td>
+						<td id="dlong_22" class="left"></td>
+						<td id="team_22" class="r2 team"></td>
+						<td id="dtimes_22" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_23" class="r2">23</td>
+						<td id="dshort_23" class="r1"></td>
+						<td id="dlong_23" class="left"></td>
+						<td id="team_23" class="r2 team"></td>
+						<td id="dtimes_23" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_24" class="r2">24</td>
+						<td id="dshort_24" class="r1"></td>
+						<td id="dlong_24" class="left"></td>
+						<td id="team_24" class="r2 team"></td>
+						<td id="dtimes_24" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_25" class="r2">25</td>
+						<td id="dshort_25" class="r1"></td>
+						<td id="dlong_25" class="left"></td>
+						<td id="team_25" class="r2 team"></td>
+						<td id="dtimes_25" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_26" class="r2">26</td>
+						<td id="dshort_26" class="r1"></td>
+						<td id="dlong_26" class="left"></td>
+						<td id="team_26" class="r2 team"></td>
+						<td id="dtimes_26" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_27" class="r2">27</td>
+						<td id="dshort_27" class="r1"></td>
+						<td id="dlong_27" class="left"></td>
+						<td id="team_27" class="r2 team"></td>
+						<td id="dtimes_27" class="r2"></td>
+					</tr>
+					<tr style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_28" class="r2">28</td>
+						<td id="dshort_28" class="r1"></td>
+						<td id="dlong_28" class="left"></td>
+						<td id="team_28" class="r2 team"></td>
+						<td id="dtimes_28" class="r2"></td>
+					</tr>
+					<tr id="row29" style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_29" class="r2">29</td>
+						<td id="dshort_29" class="r1"></td>
+						<td id="dlong_29" class="left"></td>
+						<td id="team_29" class="r2 team"></td>
+						<td id="dtimes_29" class="r2"></td>
+					</tr>
+					<tr id="row30" style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_30" class="r2">30</td>
+						<td id="dshort_30" class="r1"></td>
+						<td id="dlong_30" class="left"></td>
+						<td id="team_30" class="r2 team"></td>
+						<td id="dtimes_30" class="r2"></td>
+					</tr>
+					<tr id="row31" style="line-height: 7.01mm;" class="thead b2">
+						<td id="date_31" class="r2">31</td>
+						<td id="dshort_31" class="r1"></td>
+						<td id="dlong_31" class="left"></td>
+						<td id="team_31" class="r2 team"></td>
+						<td id="dtimes_31" class="r2"></td>
+					</tr>
+				</tbody>
+			</table>
+
+		</div>
+
+	</div>
+</body>
+</html>

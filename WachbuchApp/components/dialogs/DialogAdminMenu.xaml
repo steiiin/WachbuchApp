@@ -1,0 +1,40 @@
+﻿<Window x:Class="WachbuchApp.DialogAdminMenu"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="clr-namespace:WachbuchApp"
+        
+        Height="600" Width="500" 
+        AllowsTransparency="True" WindowStyle="None" Background="White"
+        
+        Icon="../../resources/ic_launcher.ico" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" SizeToContent="Height"
+        Loaded="Window_Loaded">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35" />
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Titlebar -->
+        <l:ControlWindowTitlebar Title="{StaticResource DialogAdminMenu_Title}" ExitButtonClick="Window_Titlebar_Exited" />
+
+        <!-- Content -->
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.ColumnSpan="2" Margin="20">
+
+            <Button Content="{StaticResource DialogAdminMenu_Action_MissingQuali}" Margin="0,0,0,10" Click="BtnActionMissingQuali_Click" />
+            <Button Content="{StaticResource DialogAdminMenu_Action_HardExit}" Margin="0,0,0,10" Click="BtnActionHardExit_Click" />
+
+        </StackPanel>
+
+        <!-- Overlay: Dialoge -->
+        <Grid Name="overlayDialog" Grid.RowSpan="9" Grid.ColumnSpan="9" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Rectangle Fill="#ccffffff" Grid.Row="1" />
+            <Rectangle Fill="#77000000" Grid.Row="0" />
+        </Grid>
+
+        <Border BorderBrush="#000000" BorderThickness="1,0,1,1" Grid.Row="1" Grid.RowSpan="3" />
+    </Grid>
+</Window>
