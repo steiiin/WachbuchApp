@@ -56,7 +56,7 @@ namespace WachbuchApp
             DateTime scheduledClean = DateTime.Now;
 
             // Timer erstellen
-            Timer backgroundTimer = new(async (s) =>
+            App.backgroundTimer = new(async (s) =>
             {
 
                 try
@@ -98,6 +98,7 @@ namespace WachbuchApp
                 }
 
             }, null, TimeSpan.FromMinutes(1), TimeSpan.FromHours(1));
+            GC.KeepAlive(App.backgroundTimer);
 
         }
 
@@ -1230,7 +1231,7 @@ namespace WachbuchApp
                 if (teamBuddy != null) { content.AppendLine(string.Format("LOCATION;CHARSET=UTF-8:{0}", teamBuddy)); }
                 content.AppendLine("CLASS:PUBLIC");
                 content.AppendLine(string.Format("DTSTART:{0}", ConvertDateTime(shift.TimeStart)));
-                content.AppendLine(string.Format("DTEND:{0}", ConvertDateTime(shift.TimeStart)));
+                content.AppendLine(string.Format("DTEND:{0}", ConvertDateTime(shift.TimeEnd)));
                 content.AppendLine("END:VEVENT");
 
             }

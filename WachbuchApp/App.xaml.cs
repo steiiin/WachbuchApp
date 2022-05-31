@@ -14,6 +14,8 @@ namespace WachbuchApp
         private EventWaitHandle? singleinstanceEventWaitHandle;
         private Mutex? singleinstanceMutex;
 
+        public static Timer? backgroundTimer;
+
         private void Application_Startup(object sender, StartupEventArgs e)
         {
 
