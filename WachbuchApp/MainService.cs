@@ -160,12 +160,12 @@ namespace WachbuchApp
 
             // Öffentliche Daten prüfen & ggf. laden
             bool publicDataAvailable = true;
-            bool publicDataOutdated = true;
+            bool publicDataOutdated = false;
             for (int day = 1; day <= dateTo.Day; day++)
             {
                 DateTime thisDate = new(dateFrom.Year, dateFrom.Month, day);
                 if (!db.TestDate(thisDate)) { publicDataAvailable = false; break; }
-                if (!db.IsDateDataOutdated(thisDate)) { publicDataOutdated = false; break; }
+                if (db.IsDateDataOutdated(thisDate)) { publicDataOutdated = true; break; }
             }
             if (!publicDataAvailable || publicDataOutdated)
             {

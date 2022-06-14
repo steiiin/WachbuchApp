@@ -13,7 +13,7 @@ using System.Windows.Input;
 
 namespace WachbuchApp
 {
-
+    
     public partial class MainWindow : Window
     {
 
@@ -96,13 +96,16 @@ namespace WachbuchApp
         public void MinimizeToTray()
         {
 
+            // Evtl. abmelden
+            PrivateModeLogout();
+
+            // Private Daten löschen
+            Service.Database.ClearPrivateCache();
+
             // Fenster ausblenden
             Opacity = 0;
             ShowInTaskbar = false;
             Hide();
-
-            // Private Daten löschen
-            Service.Database.ClearPrivateCache();
 
         }
 
@@ -126,8 +129,13 @@ namespace WachbuchApp
             SwitchToPublicMode();
             ResetStatusbar();
 
-            // Datum setzen, wenn Browser initialisiert ist
-            if (docViewer.IsInitialized) DocViewer_IsBrowserInitializedChanged(docViewer, new());
+            // Datum zurücksetzen, wenn Browser initialisiert ist
+            if (docViewer.IsInitialized)
+            {
+                Button firstBtn = (Button)stackHandlerSelector.Children[0];
+                if (!firstBtn.IsDefault) firstBtn.RaiseEvent(new(ButtonBase.ClickEvent));
+                DocViewer_IsBrowserInitializedChanged(docViewer, new());
+            }
 
         }
 
@@ -557,6 +565,17 @@ namespace WachbuchApp
 
         private void CalendarInput_SelectedDatesChanged(object sender, SelectionChangedEventArgs e)
         {
+
+            // Anzeigedatum korrigieren
+            if (calendarInput.SelectedDate != null)
+            {
+                if (calendarInput.DisplayDate.Year != calendarInput.SelectedDate.Value.Year ||
+                    calendarInput.DisplayDate.Month != calendarInput.SelectedDate.Value.Month)
+                {
+                    calendarInput.DisplayDate = calendarInput.SelectedDate.Value;
+                }
+            }
+
             // Aktualisieren für einzelnen Tag > BookHandler
             UpdateDate();
         }
@@ -1357,7 +1376,7 @@ namespace WachbuchApp
 
         }
 
-        private string CreateIcalText()
+        private string CreateIcalText(DateTime monthDate)
         {
 
             // Dieser Button ist erst verfügbar, wenn die Daten für den Dienstplan geladen wurden > Keine weitere Abfrage
@@ -1365,7 +1384,7 @@ namespace WachbuchApp
 
             // Kalender erstellen
             var ical = new MainServiceHelper.ExtensionIcal();
-            foreach (var privShift in Service.Database.GetPrivateShifts(DateTime.MinValue))
+            foreach (var privShift in Service.Database.GetPrivateShifts(monthDate))
             {
 
                 // Evtl. TeamBuddy über öffentliche Schichtplan ziehen
@@ -1546,7 +1565,7 @@ namespace WachbuchApp
                 {
 
                     // Ical-Text schreiben
-                    string content = CreateIcalText();
+                    string content = CreateIcalText(monthDate);
                     if (content != "")
                     {
                         await File.WriteAllTextAsync(saveFileDialog.FileName, content);
@@ -1603,7 +1622,7 @@ namespace WachbuchApp
                 {
 
                     // Ical-Text schreiben
-                    string content = CreateIcalText();
+                    string content = CreateIcalText(monthDate);
                     if (content != "")
                     {
                         await File.WriteAllTextAsync(tmpIcalPath, content);
