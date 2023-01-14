@@ -13,7 +13,7 @@ using System.Windows.Input;
 
 namespace WachbuchApp
 {
-    
+
     public partial class MainWindow : Window
     {
 
@@ -37,7 +37,7 @@ namespace WachbuchApp
             // BackgroundService starten
             Service = new();
             Service.GetDataFinished += Service_GetDataFinished;
-            
+
         }
 
         public void StartInState(bool startMinimized)
@@ -118,7 +118,7 @@ namespace WachbuchApp
             Show();
             CalculateWindow();
             Opacity = 1;
-           
+
             // Windows in Vordergrund
             Topmost = true;
             Activate();
@@ -186,6 +186,7 @@ namespace WachbuchApp
             SWITCH_STATE,
 
             ERROR_CREDENTIAL,
+            ERROR_TOKENEXPIRED,
             ERROR_CONNECTION,
             ERROR_SERVER,
 
@@ -276,6 +277,14 @@ namespace WachbuchApp
                         SetStatusbar(StatusText: MainServiceHelper.GetString("Status_NoData"));
                     }
 
+                    break;
+
+                // TokenExpired > Zeige Meldung an und wechsele dann auf CredentialError
+                case MessageState.ERROR_TOKENEXPIRED:
+
+                    DialogMessageBox msgExpired = DialogMessageBox.GetInstance(this, MainServiceHelper.GetString("MainWindow_ErrorExpired_Title"), MainServiceHelper.GetString("MainWindow_ErrorExpired_Message"), MessageBoxImage.Error, new(MainServiceHelper.GetString("Common_Button_Ok"), 
+                    () => { UpdateDate(ForceUpdate: true); return; }));
+                    MainServiceHelper.ShowDialog(overlayDialog, msgExpired);
                     break;
 
                 // ConnectionError 
@@ -429,6 +438,12 @@ namespace WachbuchApp
                     UpdateMessageDisplay(MessageState.ERROR_CREDENTIAL, FetchedDate: state.AvailabeDataLastFetched, IsDataAvailable: state.IsDataAvailable);
                     break;
 
+                // Wenn Token abgelaufen > Fehlermeldung (Kann nicht hier sondern nur auf der Webseite behoben werden)
+                case VivendiApiState.OK_BUT_EXPIRED:
+
+                    UpdateMessageDisplay(MessageState.ERROR_TOKENEXPIRED, FetchedDate: state.AvailabeDataLastFetched, IsDataAvailable: state.IsDataAvailable);
+                    break;
+
                 // Keine Verbindung
                 case VivendiApiState.CONNECTION_ERROR:
 
@@ -464,6 +479,7 @@ namespace WachbuchApp
             if (calendarInput.SelectedDate == null || calendarInput.SelectedDate != DateTime.Now)
             {
                 calendarInput.SelectedDate = DateTime.Now;
+                monthInput.SelectedDate = DateTime.Now;
             }
 
         }
@@ -482,10 +498,18 @@ namespace WachbuchApp
                     Application.Current.Dispatcher.Invoke(async () =>
                     {
 
-                        if (calendarInput.SelectedDate == null) { return; }
+                        if (calendarInput.SelectedDate == null ||
+                            monthInput.SelectedDate == null) { return; }
 
                         UpdateMessageDisplay(MessageState.SWITCH_STATE);
-                        await currentHandler.UpdateSource(calendarInput.SelectedDate.Value, Service);
+                        if (currentHandler.GetType() == typeof(PlanHandler))
+                        {
+                            await currentHandler.UpdateSource(monthInput.SelectedDate.Value, Service);
+                        }
+                        else
+                        {
+                            await currentHandler.UpdateSource(calendarInput.SelectedDate.Value, Service);
+                        }
 
                     });
                 }
@@ -505,6 +529,10 @@ namespace WachbuchApp
                 if (currentHandler.GetType() == typeof(BookHandler))
                 {
 
+                    // Abbruch, wenn kein Datum gewählt
+                    if (calendarInput.SelectedDate == null) { return; }
+                    DateTime selectedDate = calendarInput.SelectedDate.Value;
+
                     DocViewerEvent @event = new(e.Message.ToString(), (BookHandler)currentHandler);
                     switch (@event.Action)
                     {
@@ -512,9 +540,9 @@ namespace WachbuchApp
                         // Mitarbeiter ändern
                         case DocViewerEvent.EventAction.EDIT_EMPLOYEE:
 
-                            string modText = ((BookHandler)currentHandler).GetModEmployeeText(@event.LabelId) ?? string.Empty;
+                            string modText = ((BookHandler)currentHandler).GetModEmployeeText(@event.LabelId, selectedDate) ?? string.Empty;
 
-                            DialogEditEmployee editEmployee = DialogEditEmployee.GetInstance(this, Service, (string.IsNullOrEmpty(modText) ? DialogEditEmployeeEditAction.EDIT_QUALIFICATION : DialogEditEmployeeEditAction.EDIT_ENTRY), @event.EmployeeId, modText);
+                            DialogEditEmployee editEmployee = DialogEditEmployee.GetInstance(this, Service, (string.IsNullOrEmpty(modText) ? DialogEditEmployeeEditAction.EDIT_QUALIFICATION : DialogEditEmployeeEditAction.EDIT_ENTRYTEXT), @event.EmployeeId, modText);
                             if (MainServiceHelper.ShowDialog(overlayDialog, editEmployee) == true)
                             {
 
@@ -525,9 +553,38 @@ namespace WachbuchApp
                                         // Nix zu tun, da im Dialog gespeichert
                                         break;
 
-                                    case DialogEditEmployeeEditAction.EDIT_ENTRY:
+                                    case DialogEditEmployeeEditAction.EDIT_ENTRYTEXT:
 
-                                        ((BookHandler)currentHandler).ModifyEntryText(@event.LabelId, DialogEditEmployee.SelectedBookEntryText);
+                                        ((BookHandler)currentHandler).ModifyEntryText(@event.LabelId, selectedDate, DialogEditEmployee.SelectedBookEntryText);
+                                        break;
+
+                                }
+
+                                UpdateDate();
+
+                            }
+                            break;
+
+                        // Innendienst bearbeiten
+                        case DocViewerEvent.EventAction.EDIT_ID:
+
+                            DialogEditIdEditEntry modEntry = ((BookHandler)currentHandler).GetModIdEntry(@event.LabelId, selectedDate) ?? 
+                                new(((BookHandler)currentHandler).GetLinkedId(@event.LabelId), "");
+
+                            DialogEditID editID = DialogEditID.GetInstance(this, Service, modEntry, (modEntry.IsEmpty ? DialogEditIdEditAction.EDIT_ASSIGNEDSTATION : DialogEditIdEditAction.EDIT_ENTRY), @event.EmployeeId);
+                            if (MainServiceHelper.ShowDialog(overlayDialog, editID) == true)
+                            {
+
+                                switch (DialogEditID.SelectedAction)
+                                {
+                                    case DialogEditIdEditAction.EDIT_ASSIGNEDSTATION:
+
+                                        // Nix zu tun, da im Dialog gespeichert
+                                        break;
+
+                                    case DialogEditIdEditAction.EDIT_ENTRY:
+
+                                        ((BookHandler)currentHandler).ModifyIdEntryText(@event.LabelId, selectedDate, DialogEditID.SelectedIdEntry.TypeShort, DialogEditID.SelectedIdEntry.EmployeeText);
                                         break;
 
                                 }
@@ -580,6 +637,11 @@ namespace WachbuchApp
             UpdateDate();
         }
 
+        private void calendarInput_KeyDown(object sender, KeyEventArgs e)
+        {
+            e.Handled = true;
+        }
+
         private async void UpdateDate(bool ForceUpdate = false)
         {
 
@@ -618,7 +680,7 @@ namespace WachbuchApp
                 monthInput.DisplayMode = CalendarMode.Year;
             }
         }
-        
+
         private void MonthInput_SelectedDatesChanged(object sender, SelectionChangedEventArgs e)
         {
             // Aktualisieren für ganzen Monat > PlanHandler
@@ -675,7 +737,7 @@ namespace WachbuchApp
             return b;
 
         }
-        
+
         private void AddHandlerSelectorButton(DocHandler handler)
         {
             stackHandlerSelector.Children.Add(CreateHandlerSwitchButton(handler, switchPublic: true));
@@ -705,7 +767,7 @@ namespace WachbuchApp
             // Kalender
             monthInput.Visibility = Visibility.Collapsed;
             calendarInput.Visibility = Visibility.Visible;
-                        
+
         }
 
         #endregion
@@ -760,17 +822,21 @@ namespace WachbuchApp
 
                 modVehicles = new();
                 modEmployee = new();
+                modIDs = new();
 
                 linkEmployee = new();
+                linkIDs = new();
                 linkVehicles = new();
             }
 
             // ####################################################################################
 
-            private readonly Dictionary<string, MainServiceConfiguration.BookVehicle> modVehicles;
             private readonly Dictionary<string, string> modEmployee;
+            private readonly Dictionary<string, DialogEditIdEditEntry> modIDs;
+            private readonly Dictionary<string, MainServiceConfiguration.BookVehicle> modVehicles;
 
             private Dictionary<string, long> linkEmployee;
+            private Dictionary<string, string> linkIDs;
             private Dictionary<string, MainServiceConfiguration.BookVehicle> linkVehicles;
 
             // ####################################################################################
@@ -813,51 +879,59 @@ namespace WachbuchApp
 
                 // Schichten durchlaufen
                 linkEmployee.Clear();
+                linkIDs.Clear();
                 linkVehicles.Clear();
                 foreach (var bookShift in book.Shifts)
                 {
 
                     var shift = service.Database.GetShift(bookDate, bookShift.ConfigKey);
-
+                    
                     // Mitarbeiter suchen & zuweisen
                     var EmployeeList = service.Database.GetBoundEmployee(shift);
                     if (EmployeeList.Count == 0)
                     {
-                        ClearEmployeeEntry(bookShift.LabelEmp1);
-                        ClearEmployeeEntry(bookShift.LabelEmp2);
-                        ClearEmployeeEntry(bookShift.LabelEmpH);
+                        ClearEmployeeEntry(bookShift.LabelEmp1, bookDate);
+                        ClearEmployeeEntry(bookShift.LabelEmp2, bookDate);
                     }
                     else if (EmployeeList.Count == 1)
                     {
-                        SetEmployeeEntry(bookShift.LabelEmp1!, EmployeeList[0].EmployeeLabelText);
-                        ClearEmployeeEntry(bookShift.LabelEmp2);
-                        ClearEmployeeEntry(bookShift.LabelEmpH);
+                        SetEmployeeEntry(bookShift.LabelEmp1!, bookDate, EmployeeList[0].EmployeeLabelText);
+                        ClearEmployeeEntry(bookShift.LabelEmp2, bookDate);
 
                         linkEmployee.Add(bookShift.LabelEmp1!, EmployeeList[0].VivendiId);
                     }
                     else if (EmployeeList.Count == 2)
                     {
-                        SetEmployeeEntry(bookShift.LabelEmp1, EmployeeList[0].EmployeeLabelText);
-                        SetEmployeeEntry(bookShift.LabelEmp2, EmployeeList[1].EmployeeLabelText);
-                        ClearEmployeeEntry(bookShift.LabelEmpH);
+                        SetEmployeeEntry(bookShift.LabelEmp1, bookDate, EmployeeList[0].EmployeeLabelText);
+                        SetEmployeeEntry(bookShift.LabelEmp2, bookDate, EmployeeList[1].EmployeeLabelText);
 
                         linkEmployee.Add(bookShift.LabelEmp1!, EmployeeList[0].VivendiId);
                         linkEmployee.Add(bookShift.LabelEmp2!, EmployeeList[1].VivendiId);
                     }
                     else
                     {
-                        SetEmployeeEntry(bookShift.LabelEmp1, EmployeeList[0].EmployeeLabelText);
-                        SetEmployeeEntry(bookShift.LabelEmp2, EmployeeList[1].EmployeeLabelText);
-                        SetEmployeeEntry(bookShift.LabelEmpH, EmployeeList[2].EmployeeLabelText);
-
+                        SetEmployeeEntry(bookShift.LabelEmp1, bookDate, EmployeeList[0].EmployeeLabelText);
+                        SetEmployeeEntry(bookShift.LabelEmp2, bookDate, EmployeeList[1].EmployeeLabelText);
+                        
                         linkEmployee.Add(bookShift.LabelEmp1!, EmployeeList[0].VivendiId);
                         linkEmployee.Add(bookShift.LabelEmp2!, EmployeeList[1].VivendiId);
-                        linkEmployee.Add(bookShift.LabelEmpH!, EmployeeList[2].VivendiId);
 
                         if (EmployeeList.Count > 3)
                         {
                             AppLog.Error(MainServiceHelper.GetString("MainWindow_BookHandler_WarnExceed"), bookDate.ToShortDateString() + "##" + bookShift.ConfigKey);
                         }
+                    }
+
+                    // Auf Praktikanten prüfen & zuweisen
+                    var traineeShift = bookShift.TraineeKey != null ? service.Database.GetShift(bookDate, bookShift.TraineeKey) : null;
+                    var traineeEmp = traineeShift != null ? service.Database.GetBoundEmployee(traineeShift).FirstOrDefault() : null;
+                    if (traineeEmp == null)
+                    {
+                        ClearEmployeeEntry(bookShift.LabelEmpH, bookDate);
+                    } else
+                    {
+                        SetEmployeeEntry(bookShift.LabelEmpH, bookDate, traineeEmp.EmployeeLabelText);
+                        linkEmployee.Add(bookShift.LabelEmpH!, traineeEmp.VivendiId);
                     }
 
                     // Wenn keine Schicht gefunden
@@ -905,6 +979,50 @@ namespace WachbuchApp
 
                 }
 
+                // Innendienste eintragen
+                if (book.IDs != null) {
+
+                    // Aus Vivendi übernehmen
+                    List<KeyValuePair<MainServiceDatabase.Shift, MainServiceDatabase.Employee>> idList = new();
+                    foreach (var bookIdShift in book.IDs.ConfigKeys)
+                    {
+
+                        var shift = service.Database.GetShift(bookDate, bookIdShift);
+                        if (shift == null) { continue; }
+
+                        var EmployeeList = service.Database.GetBoundEmployee(shift);
+                        foreach (var emp in EmployeeList)
+                        {
+
+                            if (emp.VivendiId == 5783 /* P., A. */ ) { continue; }
+                            if (emp.VivendiId == 5800 /* S., R. */ ) { continue; }
+
+                            if (emp.AssignedStation != book.StationName) { continue; }
+
+                            idList.Add(new(shift, emp));
+                            
+                        }
+
+                    }
+
+                    // In Reihenfolge übernehmen
+                    for (int i = 1; i <= book.IDs.MaxPlaces; i++)
+                    {
+                        KeyValuePair<MainServiceDatabase.Shift, MainServiceDatabase.Employee>? entry = idList.Any() ? idList.First() : null;
+                        if (entry == null) {
+                            ClearIdEntry(i, bookDate);
+                            continue; 
+                        }
+
+                        SetIdEntry(i, bookDate, entry.Value.Key.ShortName, entry.Value.Value.EmployeeLabelText);
+                        linkIDs.Add(string.Format("id-emp{0}", i), entry.Value.Key.ShortName);
+                        linkEmployee.Add(string.Format("id-emp{0}", i), entry.Value.Value.VivendiId);
+
+                        if (idList.Any()) { idList.RemoveAt(0); }
+                    }
+
+                }
+
                 // Schriftgrößen einpassen
                 MainServiceHelper.SetHtmlMatchFontSizes(host);
 
@@ -914,31 +1032,65 @@ namespace WachbuchApp
 
             // ####################################################################################
 
-            private void SetEmployeeEntry(string? Label, string Text)
+            private void SetEmployeeEntry(string? LabelId, DateTime LabelDate, string Text)
             {
-                if (Label == null) { return; }
+                if (LabelId == null) { return; }
 
-                if (modEmployee.ContainsKey(Label))
+                if (modEmployee.ContainsKey(GetModifyEmployeeKey(LabelId, LabelDate)))
                 {
-                    MainServiceHelper.SetHtmlInnerText(host, Label, modEmployee[Label]);
+                    MainServiceHelper.SetHtmlInnerText(host, LabelId, GetModEmployeeText(LabelId, LabelDate));
                 }
                 else
                 {
-                    MainServiceHelper.SetHtmlInnerText(host, Label, Text);
+                    MainServiceHelper.SetHtmlInnerText(host, LabelId, Text);
                 }
             }
 
-            private void ClearEmployeeEntry(string? Label)
+            private void ClearEmployeeEntry(string? LabelId, DateTime LabelDate)
             {
-                if (Label == null) { return; }
+                if (LabelId == null) { return; }
 
-                if (modEmployee.ContainsKey(Label))
+                if (modEmployee.ContainsKey(GetModifyEmployeeKey(LabelId, LabelDate)))
                 {
-                    MainServiceHelper.SetHtmlInnerText(host, Label, modEmployee[Label]);
+                    MainServiceHelper.SetHtmlInnerText(host, LabelId, GetModEmployeeText(LabelId, LabelDate));
                 }
                 else
                 {
-                    MainServiceHelper.ClearHtmlInnerText(host, Label);
+                    MainServiceHelper.ClearHtmlInnerText(host, LabelId);
+                }
+            }
+
+            // ####################################################################################
+
+            private void SetIdEntry(int index, DateTime LabelDate, string type, string name)
+            {
+                string LabelId = string.Format("id-emp{0}", index);
+                if (modIDs.ContainsKey(GetModifyEmployeeKey(LabelId, LabelDate)))
+                {
+                    var mod = GetModIdEntry(LabelId, LabelDate);
+                    MainServiceHelper.SetHtmlInnerText(host, string.Format("idtyp-emp{0}", index), mod!.TypeShort);
+                    MainServiceHelper.SetHtmlInnerText(host, string.Format("idemp-emp{0}", index), mod!.EmployeeText);
+                }
+                else
+                {
+                    MainServiceHelper.SetHtmlInnerText(host, string.Format("idtyp-emp{0}", index), type);
+                    MainServiceHelper.SetHtmlInnerText(host, string.Format("idemp-emp{0}", index), name);
+                }
+            }
+
+            private void ClearIdEntry(int index, DateTime LabelDate)
+            {
+                string LabelId = string.Format("id-emp{0}", index);
+                if (modIDs.ContainsKey(GetModifyEmployeeKey(LabelId, LabelDate)))
+                {
+                    var mod = GetModIdEntry(LabelId, LabelDate);
+                    MainServiceHelper.SetHtmlInnerText(host, string.Format("idtyp-emp{0}", index), mod!.TypeShort);
+                    MainServiceHelper.SetHtmlInnerText(host, string.Format("idemp-emp{0}", index), mod!.EmployeeText);
+                }
+                else
+                {
+                    MainServiceHelper.ClearHtmlInnerText(host, string.Format("idtyp-emp{0}", index));
+                    MainServiceHelper.ClearHtmlInnerText(host, string.Format("idemp-emp{0}", index));
                 }
             }
 
@@ -953,11 +1105,31 @@ namespace WachbuchApp
                 return -1;
             }
 
-            public string? GetModEmployeeText(string LabelId)
+            public string? GetModEmployeeText(string LabelId, DateTime LabelDate)
             {
-                if (modEmployee.ContainsKey(LabelId))
+                if (modEmployee.ContainsKey(GetModifyEmployeeKey(LabelId, LabelDate)))
                 {
-                    return modEmployee[LabelId];
+                    return modEmployee[GetModifyEmployeeKey(LabelId, LabelDate)];
+                }
+                return null;
+            }
+
+            // ####################################################################################
+
+            public string GetLinkedId(string key)
+            {
+                if (linkIDs.ContainsKey(key))
+                {
+                    return linkIDs[key];
+                }
+                return "";
+            }
+
+            public DialogEditIdEditEntry? GetModIdEntry(string LabelId, DateTime LabelDate)
+            {
+                if (modIDs.ContainsKey(GetModifyEmployeeKey(LabelId, LabelDate)))
+                {
+                    return modIDs[GetModifyEmployeeKey(LabelId, LabelDate)];
                 }
                 return null;
             }
@@ -979,15 +1151,27 @@ namespace WachbuchApp
 
             // ####################################################################################
 
-            public void ModifyEntryText(string Label, string newEntryText)
+            public void ModifyEntryText(string Label, DateTime LabelDate, string newEntryText)
             {
 
                 // Wenn Eintrag leer, dann Mod löschen
-                if (string.IsNullOrEmpty(newEntryText)) { modEmployee.Remove(Label); return; }
+                if (string.IsNullOrEmpty(newEntryText)) { modEmployee.Remove(GetModifyEmployeeKey(Label, LabelDate)); return; }
 
                 // Mod sonst aktualisieren oder hinzufügen
-                if (modEmployee.ContainsKey(Label)) { modEmployee[Label] = newEntryText; }
-                else { modEmployee.Add(Label, newEntryText); }
+                if (modEmployee.ContainsKey(GetModifyEmployeeKey(Label, LabelDate))) { modEmployee[GetModifyEmployeeKey(Label, LabelDate)] = newEntryText; }
+                else { modEmployee.Add(GetModifyEmployeeKey(Label, LabelDate), newEntryText); }
+
+            }
+
+            public void ModifyIdEntryText(string Label, DateTime LabelDate, string newIdType, string newIdText)
+            {
+
+                // Wenn Eintrag leer, dann Mod löschen
+                if (string.IsNullOrEmpty(newIdText)) { modIDs.Remove(GetModifyEmployeeKey(Label, LabelDate)); return; }
+
+                // Mod sonst aktualisieren oder hinzufügen
+                if (modIDs.ContainsKey(GetModifyEmployeeKey(Label, LabelDate))) { modIDs[GetModifyEmployeeKey(Label, LabelDate)] = new(newIdType, newIdText); }
+                else { modIDs.Add(GetModifyEmployeeKey(Label, LabelDate), new(newIdType, newIdText)); }
 
             }
 
@@ -1006,6 +1190,10 @@ namespace WachbuchApp
                 else { modVehicles.Add(LabelKey, newVehicle); }
 
             }
+
+            // ####################################################################################
+
+            private static string GetModifyEmployeeKey(string label, DateTime labelDate) => string.Format("{0}#{1}", label, labelDate.ToShortDateString());
 
             // ####################################################################################
 
@@ -1075,12 +1263,15 @@ namespace WachbuchApp
                     MainServiceHelper.SetHtmlInnerText(host, LabelItemTime + LabelDay, string.Format("{0} - {1}", shift.TimeStart.ToString("HH:mm"), shift.TimeEnd.ToString("HH:mm")));
 
                     // Evtl. TeamBuddy über öffentliche Schichtplan ziehen
-                    string buddyString = service.Database.GetBuddyEmployee(service.Database.GetShift(shift.ShiftDate, shift.ConfigKey), privateId)?.EmployeeLabelText ?? "";
+                    var buddies = service.Database.GetBuddyEmployee(service.Database.GetShift(shift.ShiftDate, shift.ConfigKey), privateId);
+                    string buddyString = buddies.Any() ? buddies.First().EmployeeLabelText : "";
+                    if (buddies.Count > 1) { buddyString += "+ " + (buddies.Count - 1).ToString(); }
+                    if (new List<string>() { "id", "rb-t", "rb-n" }.Contains(shift.ShortName.ToLower())) { buddyString = ""; }
                     MainServiceHelper.SetHtmlInnerText(host, LabelItemTeam + LabelDay, buddyString);
 
                     // Tag markieren
                     if (!daysWritten.Contains(shift.ShiftDate.Day)) { daysWritten.Add(shift.ShiftDate.Day); }
-                    
+
                 }
 
                 // Leere Tage im Plan überschreiben
@@ -1146,6 +1337,7 @@ namespace WachbuchApp
 
                     // Mitarbeiter ändern
                     case EventAction.EDIT_EMPLOYEE:
+                    case EventAction.EDIT_ID:
 
                         long id = handler.GetLinkedEmployee(payload);
                         LabelId = payload;
@@ -1181,6 +1373,7 @@ namespace WachbuchApp
                 if (message == null) { return EventAction.NONE; }
                 if (message.Contains("EMPLOYEE")) return EventAction.EDIT_EMPLOYEE;
                 if (message.Contains("VEHICLE")) return EventAction.EDIT_VEHICLE;
+                if (message.Contains("ID")) return EventAction.EDIT_ID;
                 return EventAction.NONE;
             }
 
@@ -1198,7 +1391,8 @@ namespace WachbuchApp
             {
                 NONE,
                 EDIT_EMPLOYEE,
-                EDIT_VEHICLE
+                EDIT_VEHICLE,
+                EDIT_ID
             }
 
         }
@@ -1259,7 +1453,7 @@ namespace WachbuchApp
         }
 
         // ########################################################################################
-        
+
         private async void PrivateModeLogin()
         {
 
@@ -1388,9 +1582,28 @@ namespace WachbuchApp
             {
 
                 // Evtl. TeamBuddy über öffentliche Schichtplan ziehen
-                string buddyString = Service.Database.GetBuddyEmployee(Service.Database.GetShift(privShift.ShiftDate, privShift.ConfigKey), PrivateMasterData.EmployeeVivendiId)?.EmployeeLabelText ?? "";
-
-                // Dienst als Termin erstellen
+                var buddies = Service.Database.GetBuddyEmployee(Service.Database.GetShift(privShift.ShiftDate, privShift.ConfigKey), PrivateMasterData.EmployeeVivendiId);
+                string? buddyString = null;
+                if (buddies.Any() && !new List<string>() { "id", "rb-t", "rb-n" }.Contains(privShift.ShortName.ToLower())) 
+                {
+                    if (buddies.Count == 1)
+                    {
+                        buddyString = buddies.First().EmployeeLabelText;
+                    }
+                    else if (buddies.Count == 2)
+                    {
+                        buddyString = buddies.First().EmployeeNameText + " &amp; " + buddies.Last().EmployeeNameText;
+                    }
+                    else
+                    {
+                        buddyString = buddies.First().EmployeeNameText;
+                        for (int i = 1; i < buddies.Count - 1; i++)
+                        {
+                            buddyString += ", " + buddies[i].EmployeeNameText;
+                        }
+                        buddyString += "& " + buddies.Last().EmployeeNameText;
+                    }
+                }
                 ical.AddShift(privShift, buddyString);
 
             }
@@ -1430,7 +1643,7 @@ namespace WachbuchApp
             bool isFailed = await PrintDocViewer();
 
             // Meldung ausgeben
-            DialogMessageBox msg = DialogMessageBox.GetInstance(this, 
+            DialogMessageBox msg = DialogMessageBox.GetInstance(this,
                 Title: MainServiceHelper.GetString("MainWindow_Action_PrintOnly"),
                 Message: (isFailed ? MainServiceHelper.GetString("MainWindow_ErrorExport_Print_Msg") : MainServiceHelper.GetString("MainWindow_ExportSuccess_Print")),
                 MessageIcon: (isFailed ? MessageBoxImage.Error : MessageBoxImage.Information),
@@ -1444,17 +1657,17 @@ namespace WachbuchApp
             bool isFailed = true;
             while (isFailed)
             {
-                
+
                 isFailed = await PrintDocViewer();
 
                 // Meldung ausgeben
-                DialogMessageBox msg = DialogMessageBox.GetInstance(this, 
+                DialogMessageBox msg = DialogMessageBox.GetInstance(this,
                     Title: MainServiceHelper.GetString("MainWindow_Action_PrintClose"),
                     Message: MainServiceHelper.GetString("MainWindow_ErrorExport_PrintClose_Msg"),
                     MessageIcon: MessageBoxImage.Question,
                     PositiveAction: new(MainServiceHelper.GetString("Common_Button_Retry"), () => { }),
                     NegativeAction: new(MainServiceHelper.GetString("Common_Button_Cancel"), () => { }));
-                
+
                 // Wenn Fehler aufgetreten ist, wird nicht beendet > Abbruch
                 if (isFailed && MainServiceHelper.ShowDialog(overlayDialog, msg) == false) { return; }
 
@@ -1482,7 +1695,7 @@ namespace WachbuchApp
             bool isFailed = await PrintDocViewer();
 
             // Meldung ausgeben
-            DialogMessageBox msg = DialogMessageBox.GetInstance(this, 
+            DialogMessageBox msg = DialogMessageBox.GetInstance(this,
                 Title: MainServiceHelper.GetString("MainWindow_Action_PrintPrivate"),
                 Message: (isFailed ? MainServiceHelper.GetString("MainWindow_ErrorExport_Private_Print_Msg") : MainServiceHelper.GetString("MainWindow_ExportSuccess_Private_Print_Msg")),
                 MessageIcon: (isFailed ? MessageBoxImage.Error : MessageBoxImage.Information),
@@ -1571,7 +1784,7 @@ namespace WachbuchApp
                         await File.WriteAllTextAsync(saveFileDialog.FileName, content);
                         isFailed = false;
                     }
-                    
+
 
                 }
 

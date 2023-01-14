@@ -6,6 +6,11 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>resources\ic_launcher.ico</ApplicationIcon>
+    <Configurations>Debug;Release;git-Main</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='git-Main|AnyCPU'">
+    <Optimize>True</Optimize>
   </PropertyGroup>
 
   <ItemGroup>
@@ -48,6 +53,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="components\dialogs\DialogEditID.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="components\usercontrols\ControlWindowTitlebar.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -93,6 +101,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Update="components\dialogs\DialogEditID.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="components\usercontrols\ControlWindowTitlebar.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>

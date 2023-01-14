@@ -149,8 +149,8 @@ namespace WachbuchApp
 
             ValidateDialog();
 
-            if (!ClearUserBox && ClearPassBox) 
-            { 
+            if (!ClearUserBox && ClearPassBox)
+            {
                 textPassword.Focus();
 
                 // Falsch-Animation erstellen
@@ -249,8 +249,8 @@ namespace WachbuchApp
             // Fehlerdialog anzeigen
             ResetLogin(ClearUserBox: false, ClearPassBox: false);
 
-            DialogMessageBox messageBox = DialogMessageBox.GetInstance(this, 
-                Title: MainServiceHelper.GetString("DialogLogin_Error_Title"), 
+            DialogMessageBox messageBox = DialogMessageBox.GetInstance(this,
+                Title: MainServiceHelper.GetString("DialogLogin_Error_Title"),
                 Message: errorMessage, MessageIcon: MessageBoxImage.Error,
                 PositiveAction: new KeyValuePair<string, Action>(MainServiceHelper.GetString("Common_Button_Ok"), () => { }));
 

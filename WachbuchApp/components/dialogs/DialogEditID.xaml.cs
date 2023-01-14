@@ -7,32 +7,34 @@ using System.Windows.Controls;
 namespace WachbuchApp
 {
 
-    public partial class DialogEditEmployee : Window
+    public partial class DialogEditID : Window
     {
 
         private MainService? _ownerService;
+        private DialogEditIdEditEntry? _idEntry;
         private long _employeeId;
 
         #region Dialog-Start
 
-        public DialogEditEmployee()
+        public DialogEditID()
         {
             InitializeComponent();
         }
 
-        internal static DialogEditEmployee GetInstance(Window owner, MainService service, DialogEditEmployeeEditAction EditAction = DialogEditEmployeeEditAction.EDIT_QUALIFICATION, long EmployeeId = -1, string BookEntryText = "")
+        internal static DialogEditID GetInstance(Window owner, MainService service, DialogEditIdEditEntry entry, DialogEditIdEditAction EditAction = DialogEditIdEditAction.EDIT_ASSIGNEDSTATION, long EmployeeId = -1)
         {
-            DialogEditEmployee wnd = new();
+            DialogEditID wnd = new();
 
             // Fenster-Variablen festlegen
             wnd.Owner = owner;
             wnd._ownerService = service;
             wnd._employeeId = EmployeeId;
+            wnd._idEntry = entry;
 
             // Statische Fenster-Eigenschaften zurücksetzen
-            DialogEditEmployee.SelectedAction = EditAction;
-            DialogEditEmployee.SelectedBookEntryText = BookEntryText;
-            DialogEditEmployee.SelectedEmployeeQualification = MainServiceDatabase.Employee.EmployeeQualification.UNKNOWN;
+            DialogEditID.SelectedAction = EditAction;
+            DialogEditID.SelectedIdEntry = entry;
+            DialogEditID.SelectedEmployeeAssignedStation = service.Configuration.Books[0].StationName;
 
             return wnd;
         }
@@ -40,9 +42,9 @@ namespace WachbuchApp
         #endregion
         #region Dialog-Result
 
-        internal static DialogEditEmployeeEditAction SelectedAction { get; private set; } = DialogEditEmployeeEditAction.EDIT_QUALIFICATION;
-        internal static string SelectedBookEntryText { get; private set; } = "";
-        internal static MainServiceDatabase.Employee.EmployeeQualification SelectedEmployeeQualification { get; private set; } = MainServiceDatabase.Employee.EmployeeQualification.UNKNOWN;
+        internal static DialogEditIdEditAction SelectedAction { get; private set; } = DialogEditIdEditAction.EDIT_ASSIGNEDSTATION;
+        internal static DialogEditIdEditEntry SelectedIdEntry { get; private set; } = DialogEditIdEditEntry.Empty;
+        internal static string SelectedEmployeeAssignedStation { get; private set; } = "";
 
         #endregion
         #region Dialog-Events
@@ -57,26 +59,33 @@ namespace WachbuchApp
                 this.Close();
             }
 
+            // Combo befüllen
+            comboTypeSelect.Items.Clear();
+            comboTypeSelect.Items.Add(new ComboBoxItem() { Content = "Innendienst", Tag = "ID", IsSelected = true });
+            comboTypeSelect.Items.Add(new ComboBoxItem() { Content = "Monatsdesinfektion", Tag = "MDR", IsSelected = SelectedIdEntry.TypeShort == "MDR" });
+
             // Mitarbeiter laden
             var employee = _ownerService!.Database.GetEmployee(_employeeId);
 
             // Erste Auswahl festlegen
             if (employee == null)
             {
-                SelectedAction = DialogEditEmployeeEditAction.EDIT_ENTRYTEXT;
+
+                SelectedAction = DialogEditIdEditAction.EDIT_ENTRY;
                 groupSelection.Visibility = Visibility.Collapsed;
-                groupQuali.Visibility = Visibility.Collapsed;
+                groupStation.Visibility = Visibility.Collapsed;
+
             }
-            else if (SelectedAction == DialogEditEmployeeEditAction.EDIT_QUALIFICATION)
+            else if (SelectedAction == DialogEditIdEditAction.EDIT_ASSIGNEDSTATION)
             {
-                radioQuali.IsChecked = true;
+                radioStation.IsChecked = true;
             }
-            else if (SelectedAction == DialogEditEmployeeEditAction.EDIT_ENTRYTEXT)
+            else if (SelectedAction == DialogEditIdEditAction.EDIT_ENTRY)
             {
                 radioEntryText.IsChecked = true;
             }
 
-            btnBookEntryClear.Visibility = (string.IsNullOrWhiteSpace(SelectedBookEntryText) ? Visibility.Collapsed : Visibility.Visible);
+            btnBookEntryClear.Visibility = (SelectedIdEntry.IsEmpty ? Visibility.Collapsed : Visibility.Visible);
             btnBookEntryClear.Content = employee == null ? MainServiceHelper.GetString("Common_Button_DeleteEntry") : MainServiceHelper.GetString("Common_Button_ResetEntry");
             btnBookEntryClear.Tag = "";
 
@@ -84,28 +93,32 @@ namespace WachbuchApp
             if (employee != null)
             {
 
-                // Combo befüllen
-                comboQualiSelect.Items.Clear();
-                foreach (MainServiceDatabase.Employee.EmployeeQualification qualification in Enum.GetValues(typeof(MainServiceDatabase.Employee.EmployeeQualification)))
+                // Station füllen & einstellen
+                comboStationSelect.Items.Clear();
+                foreach (var book in _ownerService.Configuration.Books)
                 {
-                    ComboBoxItem item = new() { Content = MainServiceHelper.GetQualificationTextFull(qualification), Tag = qualification, IsSelected = (qualification == employee.Qualification) };
-                    comboQualiSelect.Items.Add(item);
+                    if (book.IDs == null) { continue; }
+                    comboStationSelect.Items.Add(new ComboBoxItem()
+                    {
+                        Content = book.StationName,
+                        Tag = book.StationName,
+                        IsSelected = book.StationName == employee.AssignedStation
+                    });
                 }
 
                 // Namen anzeigen
-                txtQualiEmployeeName.Text = employee.EmployeeNameText;
+                txtStationEmployeeName.Text = employee.EmployeeNameText;
 
                 // FreiText befüllen, wenn bisher leer
-                if (string.IsNullOrWhiteSpace(SelectedBookEntryText))
+                if (string.IsNullOrWhiteSpace(SelectedIdEntry.EmployeeText))
                 {
-                    SelectedBookEntryText = employee.EmployeeLabelText;
+                    SelectedIdEntry.EmployeeText = employee.EmployeeLabelText;
                 }
-                btnBookEntryClear.Tag = employee.EmployeeLabelText;
 
             }
 
             // Oberfläche einsetzen
-            textBookEntry.Text = SelectedBookEntryText;
+            textBookEntry.Text = SelectedIdEntry.EmployeeText;
 
             // Dialog validieren
             _dialogOriginalStates = GenerateDialogStates();
@@ -160,7 +173,8 @@ namespace WachbuchApp
         private string GenerateDialogStates()
         {
             StringBuilder statesString = new();
-            statesString.Append(comboQualiSelect.SelectedItem?.ToString() ?? "NONE"); // OutOfRange wird nie auftreten, da alle Werte bekannt und definitiv < Int.MaxValue
+            statesString.Append(comboStationSelect.SelectedItem?.ToString() ?? "NONE"); // OutOfRange wird nie auftreten, da alle Werte bekannt und definitiv < Int.MaxValue
+            statesString.Append(comboTypeSelect.SelectedItem?.ToString() ?? "NONE");
             statesString.Append(textBookEntry.Text ?? "NONE");
             return statesString.ToString();
         }
@@ -192,18 +206,20 @@ namespace WachbuchApp
             switch (SelectedAction)
             {
 
-                case DialogEditEmployeeEditAction.EDIT_QUALIFICATION:
+                case DialogEditIdEditAction.EDIT_ASSIGNEDSTATION:
 
-                    groupName.Visibility = Visibility.Collapsed;
-                    groupQuali.Visibility = Visibility.Visible;
+                    groupEntryType.Visibility = Visibility.Collapsed;
+                    groupEntryText.Visibility = Visibility.Collapsed;
+                    groupStation.Visibility = Visibility.Visible;
                     break;
 
-                case DialogEditEmployeeEditAction.EDIT_ENTRYTEXT:
+                case DialogEditIdEditAction.EDIT_ENTRY:
 
-                    groupQuali.Visibility = Visibility.Collapsed;
-                    groupName.Visibility = Visibility.Visible;
+                    groupStation.Visibility = Visibility.Collapsed;
+                    groupEntryType.Visibility = Visibility.Visible;
+                    groupEntryText.Visibility = Visibility.Visible;
 
-                    if (!string.IsNullOrWhiteSpace(SelectedBookEntryText)) { textBookEntry.SelectAll(); }
+                    if (!string.IsNullOrWhiteSpace(SelectedIdEntry.EmployeeText)) { textBookEntry.SelectAll(); }
                     textBookEntry.Focus();
                     break;
 
@@ -215,26 +231,21 @@ namespace WachbuchApp
 
         // ########################################################################################
 
-        private void RadioQuali_Checked(object sender, RoutedEventArgs e)
+        private void RadioStation_Checked(object sender, RoutedEventArgs e)
         {
-            SelectedAction = DialogEditEmployeeEditAction.EDIT_QUALIFICATION;
+            SelectedAction = DialogEditIdEditAction.EDIT_ASSIGNEDSTATION;
             SetupDialog();
         }
 
         private void RadioEntryText_Checked(object sender, RoutedEventArgs e)
         {
-            SelectedAction = DialogEditEmployeeEditAction.EDIT_ENTRYTEXT;
+            SelectedAction = DialogEditIdEditAction.EDIT_ENTRY;
             SetupDialog();
         }
 
         // ########################################################################################
 
-        private void ComboTypeSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
-        private void ComboQualiSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ComboStationSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ValidateDialog();
         }
@@ -259,14 +270,14 @@ namespace WachbuchApp
             bool isValid = true;
 
             // Wenn Qualifikation geändert werden soll, aber UNBEKANNT ausgewählt
-            if (SelectedAction == DialogEditEmployeeEditAction.EDIT_QUALIFICATION && (comboQualiSelect.SelectedItem == null || ((MainServiceDatabase.Employee.EmployeeQualification)((ComboBoxItem)comboQualiSelect.SelectedItem).Tag) == MainServiceDatabase.Employee.EmployeeQualification.UNKNOWN))
+            if (SelectedAction == DialogEditIdEditAction.EDIT_ASSIGNEDSTATION && comboStationSelect.SelectedItem == null)
             {
                 isValid = false;
                 btnSave.Content = MainServiceHelper.GetString("DialogEditEmployee_Dialog_QualiUnknown");
             }
 
             // Wenn Text geändert werden soll, aber leer
-            if (SelectedAction == DialogEditEmployeeEditAction.EDIT_ENTRYTEXT && !btnBookEntryClear.IsVisible && string.IsNullOrWhiteSpace(textBookEntry.Text))
+            if (SelectedAction == DialogEditIdEditAction.EDIT_ENTRY && !btnBookEntryClear.IsVisible && string.IsNullOrWhiteSpace(textBookEntry.Text))
             {
                 isValid = false;
                 btnSave.Content = MainServiceHelper.GetString("DialogEditEmployee_Dialog_EmptyEntry");
@@ -294,24 +305,23 @@ namespace WachbuchApp
 
             switch (SelectedAction)
             {
-                case DialogEditEmployeeEditAction.EDIT_QUALIFICATION:
+                case DialogEditIdEditAction.EDIT_ASSIGNEDSTATION:
 
                     // Derzeitige Wahl festlegen
-                    if (comboQualiSelect.SelectedItem == null || _ownerService == null) { DialogResult = false; this.Close(); return; }
-                    SelectedEmployeeQualification = ((MainServiceDatabase.Employee.EmployeeQualification)((ComboBoxItem)comboQualiSelect.SelectedItem).Tag);
+                    if (comboStationSelect.SelectedItem == null || _ownerService == null) { DialogResult = false; this.Close(); return; }
+                    SelectedEmployeeAssignedStation = (string)((ComboBoxItem)comboStationSelect.SelectedItem).Tag;
 
                     // Direkt speichern
-                    _ownerService.Database.SetEmployeeQualification(_employeeId, SelectedEmployeeQualification);
+                    _ownerService.Database.SetEmployeeAssignedStation(_employeeId, SelectedEmployeeAssignedStation);
 
                     DialogResult = true;
                     this.Close();
                     break;
 
-                case DialogEditEmployeeEditAction.EDIT_ENTRYTEXT:
+                case DialogEditIdEditAction.EDIT_ENTRY:
 
                     // Derzeitige Wahl festlegen
-                    SelectedBookEntryText = textBookEntry.Text;
-                    if (btnBookEntryClear.Tag.ToString() == SelectedBookEntryText) { SelectedBookEntryText = ""; }
+                    SelectedIdEntry = new((string)((ComboBoxItem)comboTypeSelect.SelectedItem).Tag, textBookEntry.Text);
 
                     DialogResult = true;
                     this.Close();
@@ -327,10 +337,24 @@ namespace WachbuchApp
 
     // ########################################################################################
 
-    internal enum DialogEditEmployeeEditAction
+    internal enum DialogEditIdEditAction
     {
-        EDIT_QUALIFICATION,
-        EDIT_ENTRYTEXT
+        EDIT_ASSIGNEDSTATION,
+        EDIT_ENTRY
+    }
+
+    internal class DialogEditIdEditEntry
+    {
+
+        public string TypeShort { get; set; }
+        public string EmployeeText { get; set; }
+
+        public bool IsEmpty => TypeShort == "" || EmployeeText == "";
+
+        public DialogEditIdEditEntry(string type, string empText) { TypeShort = type; EmployeeText = empText; }
+
+        public readonly static DialogEditIdEditEntry Empty = new("", "");
+
     }
 
 }

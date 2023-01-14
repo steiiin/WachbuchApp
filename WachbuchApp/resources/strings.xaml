@@ -20,6 +20,9 @@
     <s:String x:Key="MainWindow_ErrorCredentials_FlyoutMessage">Der aktuelle Dienstplan konnte nicht abgerufen werden, weil du nicht mehr bei VivendiPep angemeldet werden konntest.&#13;Im Zwischenspeicher befindet sich noch eine Version, die aber vor ein paar Stunden oder Tagen geladen wurde.&#13;Das erstellte Wachbuch könnte veraltet sein.</s:String>
     <s:String x:Key="MainWindow_ErrorCredentials_FullMessage">Der aktuelle Dienstplan konnte nicht abgerufen werden, weil du nicht mehr bei VivendiPep angemeldet werden konntest.&#13;Auch im Zwischenspeicher ist keine ältere Version. Das Wachbuch kann deshalb nicht erstellt werden.</s:String>
     
+    <s:String x:Key="MainWindow_ErrorExpired_Title">Passwort abgelaufen</s:String>
+    <s:String x:Key="MainWindow_ErrorExpired_Message">Der aktuelle Benutzer wurde von VivendiPep aufgefordert, dass Passwort zu aktualisieren.&#13;Das geht nicht hier.&#13;&#13;Ändere das Passwort bei&#13;https://dienstplan.malteser.org&#13;oder wenn das nicht dein Konto ist, melde dich mit deinen eigenen Daten an.</s:String>
+        
     <s:String x:Key="MainWindow_BookHandler_WarnExceed">Im Wachbuch wurden mehr als 3 Mitarbeiter hinterlegt.</s:String>
     
     <s:String x:Key="MainWindow_Error_ScreenComp">Der Bildschirm ist nicht mit diesem Programm kompatibel.</s:String>
@@ -87,6 +90,10 @@
     <s:String x:Key="DialogEditEmployee_GroupQuali_Header">Qualifikation des Mitarbeiters ändern</s:String>
     <s:String x:Key="DialogEditEmployee_GroupEntryText_Header">Eintrag im Wachbuch ändern</s:String>
     
+    <!-- Dialog: EditId -->
+    <s:String x:Key="DialogEditId_Title">Innendienst ändern</s:String>
+    <s:String x:Key="DialogEditId_GroupType_Header">Welcher Dienst?</s:String>
+    <s:String x:Key="DialogEditId_GroupSelection_RadioStation">Standardwache für diesen Mitarbeiter</s:String>
     
     <!-- Dialog: EditVehicle -->
     <s:String x:Key="DialogEditVehicle_Title">Fahrzeug ändern</s:String>
@@ -109,6 +116,7 @@
     <s:String x:Key="Common_Button_Retry">Nochmal&#13;Versuchen</s:String>
     <s:String x:Key="Common_Button_Ignore">Egal</s:String>
     <s:String x:Key="Common_Button_DeleteEntry">Eintrag löschen</s:String>
+    <s:String x:Key="Common_Button_ResetEntry">Eintrag zurücksetzen</s:String>
     
     <s:String x:Key="Common_Dialog_ExitNag_Title">Abbrechen?</s:String>
     <s:String x:Key="Common_Dialog_ExitNag">Die Änderungen gehen verloren.&#13;Wirklich abbrechen?</s:String>

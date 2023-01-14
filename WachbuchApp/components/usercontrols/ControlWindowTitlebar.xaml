@@ -5,14 +5,17 @@
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="IsVisiblePropertyConverter" />
     </UserControl.Resources>
-    <Grid Background="#000000" x:Name="LayoutRoot">
+    <Grid x:Name="LayoutRoot">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="35"/>
         </Grid.ColumnDefinitions>
 
+        <!-- DragBlock -->
+        <Rectangle Fill="#000000" Grid.Column="0" Grid.ColumnSpan="2" MouseLeftButtonDown="Rectangle_MouseLeftButtonDown" />
+
         <!-- Title -->
-        <TextBlock Foreground="#ffffff" Text="{Binding Path=Title}" Style="{StaticResource Title}" VerticalAlignment="Center" Margin="10,0,0,0" Grid.Column="0" />
+        <TextBlock Foreground="#ffffff" Text="{Binding Path=Title}" Style="{StaticResource Title}" VerticalAlignment="Center" Margin="10,0,0,0" Grid.Column="0" IsHitTestVisible="False" />
         
         <!-- ExitButton -->
         <Rectangle x:Name="btnTitlebarClose"  Fill="#000000" Grid.Column="1" MouseEnter="BtnTitlebarClose_MouseEnter" MouseLeave="BtnTitlebarClose_MouseLeave" MouseLeftButtonDown="BtnTitlebarClose_MouseLeftButtonDown" MouseLeftButtonUp="BtnTitlebarClose_MouseLeftButtonUp" Visibility="{Binding IsExitButtonVisible, Converter={StaticResource IsVisiblePropertyConverter}}" />

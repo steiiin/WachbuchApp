@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
 
 namespace WachbuchApp
 {
@@ -25,7 +23,7 @@ namespace WachbuchApp
         internal static DialogEditVehicle GetInstance(Window owner, MainService service, List<MainServiceConfiguration.BookVehicle> bookVehicles, MainServiceConfiguration.BookVehicle currentVehicle)
         {
             DialogEditVehicle wnd = new();
-            
+
             // Fenster-Variablen festlegen
             wnd.Owner = owner;
             wnd._ownerService = service;

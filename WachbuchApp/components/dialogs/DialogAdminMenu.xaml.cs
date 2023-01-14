@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
 
 namespace WachbuchApp
 {
@@ -39,10 +34,10 @@ namespace WachbuchApp
         {
 
             // Fehlerquellen abfangen & Dialog sofort schließen -- sollte nicht auftreten
-            if (_ownerService == null) 
+            if (_ownerService == null)
             {
                 AppLog.Error("Der Dialog darf nicht direkt initialisiert werden, sondern mit GetInstance erstellt werden.");
-                this.Close(); 
+                this.Close();
             }
 
         }

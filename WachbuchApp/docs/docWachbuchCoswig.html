@@ -109,6 +109,30 @@
 				background-color: #ccc;
 			}
 
+			.preview table tr.nodata td.clickable, .preview table tr.nodata td.input {
+				background-color: #fff !important;
+				cursor: default !important;
+			}
+
+			table td.fontB1 div {
+				display: inline-block;
+			}
+                table td.fontB1 div:empty::before {
+                    content: "\00a0";
+                }
+
+			table td.fontB1 .splitLeft {
+				width: calc(40mm - 1.32mm); /*calc(6.88mm - 1px);*/
+				line-height: 7.88mm;
+				border-right: 3px solid #000;
+			}
+
+			table td.fontB1 .splitRight {
+				width: 50%; /*calc(6.88mm - 1px);*/
+				line-height: 7.88mm;
+				text-align: left;
+			}
+
 	</style>
 
 </head>
@@ -281,37 +305,41 @@
 						<td class="r2">Sonstiges</td>
 						<td class="r2">Dienstzeit</td>
 					</tr>
-					<tr style="line-height: 6.88mm; text-align: center;
-							   font-family: Arial; font-size: 4mm; font-weight: 400;" class="b1">
-						<td class="r2" colspan="2">&nbsp;</td>
+					<tr class="b1 body">
+						<td class="fontB1 r2 input" onclick="CefSharp.PostMessage('ID|id-emp1');" colspan="3">
+							<div class="splitLeft" id="idtyp-emp1">&nbsp;</div>
+							<div class="splitRight" id="idemp-emp1">&nbsp;</div>
+						</td>
 						<td class="r2"></td>
 						<td class="r2"></td>
-						<td class="r2"></td>
-						<td class="r2"></td>
+						<td class="r2">&nbsp;</td>
 					</tr>
-					<tr style="line-height: 6.88mm; text-align: center;
-							   font-family: Arial; font-size: 4mm; font-weight: 400;" class="b1">
-						<td class="r2" colspan="2">&nbsp;</td>
+					<tr class="b1 body">
+						<td class="fontB1 r2 input" onclick="CefSharp.PostMessage('ID|id-emp2');" colspan="3">
+							<div class="splitLeft" id="idtyp-emp2">&nbsp;</div>
+							<div class="splitRight" id="idemp-emp2">&nbsp;</div>
+						</td>
 						<td class="r2"></td>
 						<td class="r2"></td>
-						<td class="r2"></td>
-						<td class="r2"></td>
+						<td class="r2">&nbsp;</td>
 					</tr>
-					<tr style="line-height: 6.88mm; text-align: center;
-							   font-family: Arial; font-size: 4mm; font-weight: 400;" class="b1">
-						<td class="r2" colspan="2">&nbsp;</td>
+					<tr class="b1 body">
+						<td class="fontB1 r2 input" onclick="CefSharp.PostMessage('ID|id-emp3');" colspan="3">
+							<div class="splitLeft" id="idtyp-emp3">&nbsp;</div>
+							<div class="splitRight" id="idemp-emp3">&nbsp;</div>
+						</td>
 						<td class="r2"></td>
 						<td class="r2"></td>
-						<td class="r2"></td>
-						<td class="r2"></td>
+						<td class="r2">&nbsp;</td>
 					</tr>
-					<tr style="line-height: 6.88mm; text-align: center;
-							   font-family: Arial; font-size: 4mm; font-weight: 400;" class="b1">
-						<td class="r2" colspan="2">&nbsp;</td>
+					<tr class="b1 body">
+						<td class="fontB1 r2 input" onclick="CefSharp.PostMessage('ID|id-emp4');" colspan="3">
+							<div class="splitLeft" id="idtyp-emp4">&nbsp;</div>
+							<div class="splitRight" id="idemp-emp4">&nbsp;</div>
+						</td>
 						<td class="r2"></td>
 						<td class="r2"></td>
-						<td class="r2"></td>
-						<td class="r2"></td>
+						<td class="r2">&nbsp;</td>
 					</tr>
 				</tbody>
 			</table>

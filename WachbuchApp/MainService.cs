@@ -49,6 +49,8 @@ namespace WachbuchApp
 
         #region BackgroundFetchService
 
+        private static Timer? backgroundTimer;
+
         public void RunBackgroundFetch()
         {
 
@@ -56,7 +58,7 @@ namespace WachbuchApp
             DateTime scheduledClean = DateTime.Now;
 
             // Timer erstellen
-            App.backgroundTimer = new(async (s) =>
+            backgroundTimer = new(async (s) =>
             {
 
                 try
@@ -98,7 +100,7 @@ namespace WachbuchApp
                 }
 
             }, null, TimeSpan.FromMinutes(1), TimeSpan.FromHours(1));
-            GC.KeepAlive(App.backgroundTimer);
+            GC.KeepAlive(backgroundTimer);
 
         }
 
@@ -122,7 +124,8 @@ namespace WachbuchApp
             bool dataOutdated = db.IsDateDataOutdated(date);
 
             // Wenn Daten nicht vorhanden, bei Vivendi laden
-            if (!dataAvailable || dataOutdated) { 
+            if (!dataAvailable || dataOutdated)
+            {
 
                 var response = await api.FetchPublicFromTo(date, date);
                 if (response.IsFailed)
@@ -281,9 +284,11 @@ namespace WachbuchApp
                                                    new BookVehicle("Jh Mei 41/83-4", "DD-MH 8304"),
                                                    new BookVehicle("Jh Mei 41/83-5", "DD-MH 8305")},
 
-                        new List<BookShift>() { new BookShift("#R1T-Co#4340#", "Jh Cos 41/83-1", null, "rtw1-funk", "rtw1-keyplate", "rtw1-times", "rtw1-emp1", "rtw1-emp2", "rtw1-empH"),
-                                                 new BookShift("#R2T-Co#4342#", "Jh Cos 41/83-2", null, "rtw2-funk", "rtw2-keyplate", "rtw2-times", "rtw2-emp1", "rtw2-emp2", "rtw2-empH"),
-                                                 new BookShift("#R1N-Co#4341#", "Jh Cos 41/83-1", null, "nrtw1-funk", "nrtw1-keyplate", "nrtw1-times", "nrtw1-emp1", "nrtw1-emp2", "nrtw1-empH")}));
+                        new List<BookShift>() { new BookShift("#R1T-Co#4340#", "#PR1T-Co#9385#", "Jh Cos 41/83-1", null, "rtw1-funk", "rtw1-keyplate", "rtw1-times", "rtw1-emp1", "rtw1-emp2", "rtw1-empH"),
+                                                 new BookShift("#R2T-Co#4342#", "#PR2T-Co#9386#", "Jh Cos 41/83-2", null, "rtw2-funk", "rtw2-keyplate", "rtw2-times", "rtw2-emp1", "rtw2-emp2", "rtw2-empH"),
+                                                 new BookShift("#R1N-Co#4341#", "#PR1N-Co#9384#", "Jh Cos 41/83-1", null, "nrtw1-funk", "nrtw1-keyplate", "nrtw1-times", "nrtw1-emp1", "nrtw1-emp2", "nrtw1-empH")},
+
+                        new BookIds(4, new List<string>() { "#MDR#4259#", "#ID#4196#" })));
 
             Books.Add(
                 new Book("RW Meißen", "docWachbuchMeissen.html", "doc-date",
@@ -301,18 +306,20 @@ namespace WachbuchApp
                                                    new BookVehicle("Jh Mei 41/85-4", "DD-MH 8504"),
                                                    new BookVehicle("Jh Mei 41/85-5", "DD-MH 8508")},
 
-                         new List<BookShift>() { new BookShift("#R1T#4334#", "Jh Mei 41/83-1", null, "rtw1-funk", "rtw1-keyplate", "rtw1-times", "rtw1-emp1", "rtw1-emp2", "rtw1-empH"),
-                                                 new BookShift("#R2T#4337#", "Jh Mei 41/83-2", null, "rtw2-funk", "rtw2-keyplate", "rtw2-times", "rtw2-emp1", "rtw2-emp2", "rtw2-empH"),
-                                                 new BookShift("#R3T#4339#", "Jh Mei 41/83-3", "rtw3-empty", "rtw3-funk", "rtw3-keyplate", "rtw3-times", "rtw3-emp1", "rtw3-emp2", "rtw3-empH"),
-                                                 new BookShift("#K1#4336#", "Jh Mei 41/85-1", "ktw1-empty", "ktw1-funk", "ktw1-keyplate", "ktw1-times", "ktw1-emp1", "ktw1-emp2", "ktw1-empH"),
-                                                 new BookShift("#K2#4343#", "Jh Mei 41/85-2", "ktw2-empty", "ktw2-funk", "ktw2-keyplate", "ktw2-times", "ktw2-emp1", "ktw2-emp2", "ktw2-empH"),
-                                                 new BookShift("#K3#4344#", "Jh Mei 41/85-3", "ktw3-empty", "ktw3-funk", "ktw3-keyplate", "ktw3-times", "ktw3-emp1", "ktw3-emp2", "ktw3-empH"),
+                         new List<BookShift>() { new BookShift("#R1T#4334#", "#PR1T#9382#", "Jh Mei 41/83-1", null, "rtw1-funk", "rtw1-keyplate", "rtw1-times", "rtw1-emp1", "rtw1-emp2", "rtw1-empH"),
+                                                 new BookShift("#R2T#4337#", "#PR2T#9388#", "Jh Mei 41/83-2", null, "rtw2-funk", "rtw2-keyplate", "rtw2-times", "rtw2-emp1", "rtw2-emp2", "rtw2-empH"),
+                                                 new BookShift("#R3T#4339#", "#PR3T#9387#", "Jh Mei 41/83-3", "rtw3-empty", "rtw3-funk", "rtw3-keyplate", "rtw3-times", "rtw3-emp1", "rtw3-emp2", "rtw3-empH"),
+                                                 new BookShift("#K1#4336#", null, "Jh Mei 41/85-1", "ktw1-empty", "ktw1-funk", "ktw1-keyplate", "ktw1-times", "ktw1-emp1", "ktw1-emp2", "ktw1-empH"),
+                                                 new BookShift("#K2#4343#", null, "Jh Mei 41/85-2", "ktw2-empty", "ktw2-funk", "ktw2-keyplate", "ktw2-times", "ktw2-emp1", "ktw2-emp2", "ktw2-empH"),
+                                                 new BookShift("#K3#4344#", null, "Jh Mei 41/85-3", "ktw3-empty", "ktw3-funk", "ktw3-keyplate", "ktw3-times", "ktw3-emp1", "ktw3-emp2", "ktw3-empH"),
 
-                                                 new BookShift("#R1N#4335#", "Jh Mei 41/83-1", null, "nrtw1-funk", "nrtw1-keyplate", "nrtw1-times", "nrtw1-emp1", "nrtw1-emp2", "nrtw1-empH"),
-                                                 new BookShift("#R2N#4338#", "Jh Mei 41/83-2", null, "nrtw2-funk", "nrtw2-keyplate", "nrtw2-times", "nrtw2-emp1", "nrtw2-emp2", "nrtw2-empH"),
+                                                 new BookShift("#R1N#4335#", "#PR1N#9381#", "Jh Mei 41/83-1", null, "nrtw1-funk", "nrtw1-keyplate", "nrtw1-times", "nrtw1-emp1", "nrtw1-emp2", "nrtw1-empH"),
+                                                 new BookShift("#R2N#4338#", "#PR2N#9383#", "Jh Mei 41/83-2", null, "nrtw2-funk", "nrtw2-keyplate", "nrtw2-times", "nrtw2-emp1", "nrtw2-emp2", "nrtw2-empH"),
 
-                                                 new BookShift("#RB-T#4332#", null, null, null, null, null, "rbt-emp1", "rbt-emp2", "rbt-empH"),
-                                                 new BookShift("#RB-N#5337#", null, null, null, null, null, "rbn-emp1", "rbn-emp2", "rbn-empH")}));
+                                                 new BookShift("#RB-T#4332#", null, null, null, null, null, null, "rbt-emp1", "rbt-emp2", "rbt-empH"),
+                                                 new BookShift("#RB-N#5337#", null, null, null, null, null, null, "rbn-emp1", "rbn-emp2", "rbn-empH")},
+                         
+                         null));
 
             Books.Add(
                 new Book("NEF Meißen", "docWachbuchNefMeissen.html", "doc-date",
@@ -320,8 +327,10 @@ namespace WachbuchApp
                          new List<BookVehicle>() { new BookVehicle("Jh Mei 41/82-1", "MEI-RK 182"),
                                                    new BookVehicle("Jh Mei 41/82-2", "DD-MH 822")},
 
-                         new List<BookShift>() { new BookShift("#NT#4330#", "Jh Mei 41/82-1", null, "nef1-funk", "nef1-keyplate", "nef1-times", "nef1-emp1", "nef1-empH", null),
-                                                 new BookShift("#NN#4331#", "Jh Mei 41/82-1", null, "nnef1-funk", "nnef1-keyplate", "nef1-times", "nnef1-emp1", "nnef1-empH", null)}));
+                         new List<BookShift>() { new BookShift("#NT#4330#", null, "Jh Mei 41/82-1", null, "nef1-funk", "nef1-keyplate", "nef1-times", "nef1-emp1", "nef1-empH", null),
+                                                 new BookShift("#NN#4331#", null, "Jh Mei 41/82-1", null, "nnef1-funk", "nnef1-keyplate", "nef1-times", "nnef1-emp1", "nnef1-empH", null)},
+                         
+                         null));
 
             // Bekannte Schichten löschen
             KnownShifts = new();
@@ -392,16 +401,18 @@ namespace WachbuchApp
 
             public List<BookVehicle> Vehicles { get; set; }
             public List<BookShift> Shifts { get; set; }
+            public BookIds? IDs { get; set; }
 
             // ########################################################################################
 
-            public Book(string stationName, string docFilename, string docLabelDate, List<BookVehicle> vehicleList, List<BookShift> shiftsList)
+            public Book(string stationName, string docFilename, string docLabelDate, List<BookVehicle> vehicleList, List<BookShift> shiftsList, BookIds? bookIds)
             {
                 StationName = stationName;
                 DocFile = docFilename;
                 LabelDate = docLabelDate;
                 Vehicles = vehicleList;
                 Shifts = shiftsList;
+                IDs = bookIds;
             }
 
         }
@@ -431,7 +442,7 @@ namespace WachbuchApp
 
             public override int GetHashCode()
             {
-                return (FunkId+Keyplate).GetHashCode();
+                return (FunkId + Keyplate).GetHashCode();
             }
 
         }
@@ -440,6 +451,7 @@ namespace WachbuchApp
         {
 
             public string ConfigKey { get; set; }
+            public string? TraineeKey { get; set; }
 
             [JsonIgnore]
             public long VivendiId
@@ -472,9 +484,10 @@ namespace WachbuchApp
             public string? LabelEmp2 { get; set; }
             public string? LabelEmpH { get; set; }
 
-            public BookShift(string configKey, string? defaultVehicle, string? labelEmpty, string? labelFunk, string? labelKeyplate, string? labelTimes, string? labelEmp1, string? labelEmp2, string? labelEmpH)
+            public BookShift(string configKey, string? traineeKey, string? defaultVehicle, string? labelEmpty, string? labelFunk, string? labelKeyplate, string? labelTimes, string? labelEmp1, string? labelEmp2, string? labelEmpH)
             {
                 ConfigKey = configKey;
+                TraineeKey = traineeKey;
                 DefaultVehicle = defaultVehicle;
                 LabelEmpty = labelEmpty;
                 LabelFunk = labelFunk;
@@ -483,6 +496,20 @@ namespace WachbuchApp
                 LabelEmp1 = labelEmp1;
                 LabelEmp2 = labelEmp2;
                 LabelEmpH = labelEmpH;
+            }
+
+        }
+
+        public class BookIds
+        {
+
+            public int MaxPlaces { get; set; }
+            public List<string> ConfigKeys { get; set; }
+
+            public BookIds(int maxPlaces, List<string> configKeys)
+            {
+                MaxPlaces = maxPlaces;
+                ConfigKeys = configKeys;
             }
 
         }
@@ -592,6 +619,9 @@ namespace WachbuchApp
             [JsonProperty(PropertyName = "eQu")]
             public EmployeeQualification Qualification { get; set; }
 
+            [JsonProperty(PropertyName = "eSt")]
+            public string AssignedStation { get; set; }
+
             // ####################################################################################
 
             public Employee(long vivendiId, string firstName, string lastName)
@@ -600,6 +630,7 @@ namespace WachbuchApp
                 FirstName = firstName;
                 LastName = lastName;
                 Qualification = EmployeeQualification.UNKNOWN;
+                AssignedStation = "RW Meissen";
             }
 
             // ####################################################################################
@@ -824,12 +855,12 @@ namespace WachbuchApp
             return result;
         }
 
-        public Employee? GetBuddyEmployee(Shift? shift, long privateId)
+        public List<Employee> GetBuddyEmployee(Shift? shift, long privateId)
         {
 
             var otherEmp = (from x in GetBoundEmployee(shift) where x.VivendiId != privateId orderby x.Qualification descending select x);
-            if (otherEmp.Any()) { return otherEmp.First(); }
-            else { return null; }
+            if (otherEmp.Any()) { return otherEmp.ToList<Employee>(); }
+            else { return new(); }
 
         }
 
@@ -854,6 +885,13 @@ namespace WachbuchApp
         {
             if (!employeeDictionary.ContainsKey(employeeId)) { return; }
             employeeDictionary[employeeId].Qualification = newQualification;
+            SaveInstance();
+        }
+
+        public void SetEmployeeAssignedStation(long employeeId, string newStation)
+        {
+            if (!employeeDictionary.ContainsKey(employeeId)) { return; }
+            employeeDictionary[employeeId].AssignedStation = newStation;
             SaveInstance();
         }
 
@@ -1033,14 +1071,15 @@ namespace WachbuchApp
 
         }
 
-        private static byte[] EncryptedFileKeyArray { 
+        private static byte[] EncryptedFileKeyArray
+        {
             get
             {
                 var defaultArray = new byte[32];
                 var identityBytes = Encoding.UTF8.GetBytes(System.Security.Principal.WindowsIdentity.GetCurrent(System.Security.Principal.TokenAccessLevels.Read).User?.Value ?? MainServiceHelper.GetString("MainWindow_Title"));
                 Array.Copy(identityBytes, defaultArray, 32);
                 return defaultArray;
-            } 
+            }
         }
         private static byte[] EncryptedFileInitVectorArray
         {
@@ -1227,8 +1266,8 @@ namespace WachbuchApp
                 content.AppendLine(string.Format("UID:{0}@steiiin-cos-dp", shift.PrimaryKey));
                 content.AppendLine(string.Format("DTSTAMP:{0}", ConvertDateTime(DateTime.Now)));
                 content.AppendLine(string.Format("SUMMARY;CHARSET=UTF-8:{0}", shift.ShortName));
-                content.AppendLine(string.Format("DESCRIPTION;CHARSET=UTF-8:{0}{1}", shift.FullName, teamBuddy == null ? "" : " (mit " + teamBuddy + ")"));
-                if (teamBuddy != null) { content.AppendLine(string.Format("LOCATION;CHARSET=UTF-8:{0}", teamBuddy)); }
+                content.AppendLine(string.Format("DESCRIPTION;CHARSET=UTF-8:{0}{1}", shift.FullName, string.IsNullOrEmpty(teamBuddy) ? "" : " (mit " + teamBuddy + ")"));
+                if (!string.IsNullOrEmpty(teamBuddy)) { content.AppendLine(string.Format("LOCATION;CHARSET=UTF-8:{0}", teamBuddy)); }
                 content.AppendLine("CLASS:PUBLIC");
                 content.AppendLine(string.Format("DTSTART:{0}", ConvertDateTime(shift.TimeStart)));
                 content.AppendLine(string.Format("DTEND:{0}", ConvertDateTime(shift.TimeEnd)));
@@ -1321,6 +1360,7 @@ namespace WachbuchApp
             try
             {
                 var response = await client!.GetAsync(urlEndpointEmployee);
+                if (response == null) { return false; }
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
@@ -1708,12 +1748,13 @@ namespace WachbuchApp
             }
 
             // Liste durchlaufen
+            var latestUsername = "";
             foreach (MainServiceConfiguration.Credential credential in toTest)
             {
 
                 var response = await Login(credential);
 
-                if (response == VivendiApiState.SUCCESSFUL) { break; }
+                if (response == VivendiApiState.SUCCESSFUL) { latestUsername = credential.Username; break; }
                 else if (response == VivendiApiState.CREDENTIALS_ERROR) { CredentialBlock.RemoveCredential(credential.Username); }
                 else if (response == VivendiApiState.CONNECTION_ERROR) { return VivendiApiState.CONNECTION_ERROR; }
                 else { return VivendiApiState.SERVER_APP_ERROR; }
@@ -1726,16 +1767,20 @@ namespace WachbuchApp
             if (await TestConnection())
             {
 
-                if (isTesting) 
+                if (isTesting)
                 {
                     CredentialBlock.AddCredentials(username, passhash);
                 }
 
                 return VivendiApiState.SUCCESSFUL;
+
             }
             else
             {
-                return VivendiApiState.CREDENTIALS_ERROR;
+
+                CredentialBlock.RemoveCredential(latestUsername);
+                return VivendiApiState.OK_BUT_EXPIRED;
+
             }
 
         }
@@ -1901,7 +1946,7 @@ namespace WachbuchApp
 
                             // Weitere Zeiten nur Überstunden, deshalb nur erste Zeit auswählen
                             var currentZeit = current.Zeiten.First();
-
+                            
                             // Schicht hinzufügen
                             MainServiceDatabase.Shift thisShift = new(current.Dienst.Id, current.Dienst.Name, current.Dienst.ShortName, jD.Day, currentZeit.Start, currentZeit.End, TimeSpan.FromMinutes(currentZeit.Pause), privateEmployeeId);
                             if (shifts.ContainsKey(thisShift.PrimaryKey)) { shifts[thisShift.PrimaryKey].BoundEmployee.Add(privateEmployeeId); }
@@ -1987,6 +2032,7 @@ namespace WachbuchApp
     internal enum VivendiApiState
     {
         SUCCESSFUL,
+        OK_BUT_EXPIRED,
         SERVER_APP_ERROR,
         CREDENTIALS_ERROR,
         CONNECTION_ERROR
@@ -2068,82 +2114,6 @@ namespace WachbuchApp
 
     }
 
-
     #endregion
 
 }
-
-#region backup
-
-//private void RunBackgroundFetch()
-//{
-
-//    // Abbrechen, sollte der Thread noch laufen
-//    if (backgroundThread != null && backgroundThread.IsAlive) { return; }
-
-//    // Variablen initialisieren
-//    DateTime scheduledClean = DateTime.Now;
-
-//    // Thread erstellen
-//    backgroundThread = new(async () =>
-//    {
-
-//        // Damit wenigstens der erste Tag schneller lädt, kurz den Monatsabruf verzögern
-//        //Thread.Sleep(TimeSpan.FromMinutes(1));
-
-//        // Schleife dauerhat wiederholen
-//        while (true)
-//        {
-
-//            try
-//            {
-
-//                // Verbinden
-//                var response = await api.FetchPublicFromTo(DateTime.Now, DateTime.Now.AddDays(31));
-//                if (response.IsFailed)
-//                {
-
-//                    // Wenn die Anmeldedaten nicht stimmen, kann dieser BackgroundFetcher beendet werden
-//                    // bis jemand das Programm öffnet und sich anmeldet. TODO: StateObjekt aktualisieren & ignorieren
-//                    //if (response.FetchState == VivendiApiState.CONNECTION_ERROR) { break; }
-
-//                    // Alle anderen Fehler (Internet fehlt, Serverfehler) werden ignoriert und in 2.5h erneut probiert
-
-//                }
-//                else
-//                {
-
-//                    // Wenn erfolgreich abgerufen & Bekannte Schichten aktualisieren
-//                    db.ImportFetchPublic(response);
-//                    response.Shifts.ForEach(x => conf.AddKnownShift(x));
-//                    conf.SaveInstance();
-
-//                }
-
-//                // Datenbank bereinigen
-//                if (scheduledClean < DateTime.Now)
-//                {
-//                    db.CleanPublicCache();
-//                    scheduledClean = DateTime.Now.AddDays(3);
-//                }
-
-//            }
-//            catch (Exception ex)
-//            {
-//                AppLog.Error(ex);
-//            }
-
-//            // Abwarten
-//            Thread.Sleep(TimeSpan.FromHours(2.5));
-
-//        }
-
-//    })
-//    { IsBackground = true };
-
-//    // Thread starten
-//    backgroundThread.Start();
-
-//}
-
-#endregion

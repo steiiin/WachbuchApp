@@ -8,13 +8,18 @@ namespace WachbuchApp
     public partial class App : Application
     {
 
+        public const int VersionIndex = 1;
+        public const string VersionCode = "0.1";
+
+        // ########################################################################################
+
         private const string UniqueEventName = "{77b560cb-200b-49d1-abd4-b37015df62a5}";
         private const string UniqueMutexName = "{2f2cbb26-8573-4616-9918-f7e6628fc961}";
 
         private EventWaitHandle? singleinstanceEventWaitHandle;
         private Mutex? singleinstanceMutex;
 
-        public static Timer? backgroundTimer;
+        // ######################################################################################
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
@@ -46,7 +51,7 @@ namespace WachbuchApp
                     })
                     {
                         IsBackground = true,
-                        
+
                     };
                     thread.Start();
                     return;
@@ -81,11 +86,11 @@ namespace WachbuchApp
                 // Mutex o. WaitHandle konnte nicht erstellt werden -- Keine Schreibrechte // Evtl. Festplatte voll
 
                 FatalError(ex);
-                
+
             }
 
         }
-    
+
         private void FatalError(Exception ex)
         {
             MessageBox.Show("Die Anwendung konnte nicht gestartet werden. Informiere den IT-Verantwortlichen.", "Fehler beim Start", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -96,7 +101,7 @@ namespace WachbuchApp
     }
 
     public static class AppLog
-    { 
+    {
 
         public static void Error(string message)
         {
@@ -114,6 +119,17 @@ namespace WachbuchApp
                 // Aktueller Pfad
                 string SAVEPATH = System.IO.Path.Combine(Environment.CurrentDirectory, "error.log");
 
+                // Neuer Eintrag anfügen
+                content.AppendLine(Environment.NewLine +
+                "####################################################################################################" + Environment.NewLine +
+                DateTime.Now.ToString() + Environment.NewLine +
+                "----------------------------------------------------------------------------------------------------" + Environment.NewLine +
+                message + Environment.NewLine +
+                (string.IsNullOrWhiteSpace(stacktrace) ? "" :
+                "----------------------------------------------------------------------------------------------------" + Environment.NewLine +
+                stacktrace + Environment.NewLine) +
+                "####################################################################################################");
+
                 // Alten Log auslesen
                 if (System.IO.File.Exists(SAVEPATH))
                 {
@@ -126,17 +142,6 @@ namespace WachbuchApp
                     content.Remove(0, content.Length - 200000);
                 }
 
-                // Neuer Eintrag anfügen
-                content.AppendLine(Environment.NewLine +
-                "####################################################################################################" + Environment.NewLine +
-                DateTime.Now.ToString() + Environment.NewLine +
-                "----------------------------------------------------------------------------------------------------" + Environment.NewLine +
-                message + Environment.NewLine +
-                (string.IsNullOrWhiteSpace(stacktrace) ? "" :
-                "----------------------------------------------------------------------------------------------------" + Environment.NewLine +
-                stacktrace + Environment.NewLine) +
-                "####################################################################################################");
-
                 // Daten schreiben
                 System.IO.File.WriteAllText(SAVEPATH, content.ToString());
 
@@ -145,7 +150,7 @@ namespace WachbuchApp
             {
                 Console.WriteLine("Unprotokollierbarer Fehler. Schreibrechte nicht vorhanden / Festplatte voll.");
             }
-            
+
         }
 
         public static void Error(Exception ex)
