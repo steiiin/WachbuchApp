@@ -984,7 +984,7 @@ namespace WachbuchApp
 
                     // Aus Vivendi übernehmen
                     List<KeyValuePair<MainServiceDatabase.Shift, MainServiceDatabase.Employee>> idList = new();
-                    foreach (var bookIdShift in book.IDs.ConfigKeys)
+                    foreach (var bookIdShift in service.Configuration.BookDefaults.IdKeys)
                     {
 
                         var shift = service.Database.GetShift(bookDate, bookIdShift);
@@ -994,9 +994,7 @@ namespace WachbuchApp
                         foreach (var emp in EmployeeList)
                         {
 
-                            if (emp.VivendiId == 5783 /* P., A. */ ) { continue; }
-                            if (emp.VivendiId == 5800 /* S., R. */ ) { continue; }
-
+                            if (service.Configuration.BookDefaults.IdIgnoredEmployees.Contains(emp.VivendiId)) { continue; }
                             if (emp.AssignedStation != book.StationName) { continue; }
 
                             idList.Add(new(shift, emp));

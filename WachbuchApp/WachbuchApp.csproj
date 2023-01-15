@@ -105,6 +105,10 @@
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="components\dialogs\DialogBulkEdit.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="components\usercontrols\ControlWindowTitlebar.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>

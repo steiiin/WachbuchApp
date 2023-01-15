@@ -32,7 +32,7 @@ namespace WachbuchApp
             // Statische Fenster-Eigenschaften zurücksetzen
             DialogEditEmployee.SelectedAction = EditAction;
             DialogEditEmployee.SelectedBookEntryText = BookEntryText;
-            DialogEditEmployee.SelectedEmployeeQualification = MainServiceDatabase.Employee.EmployeeQualification.UNKNOWN;
+            DialogEditEmployee.SelectedEmployeeQualification = EmployeeQualification.UNKNOWN;
 
             return wnd;
         }
@@ -42,7 +42,7 @@ namespace WachbuchApp
 
         internal static DialogEditEmployeeEditAction SelectedAction { get; private set; } = DialogEditEmployeeEditAction.EDIT_QUALIFICATION;
         internal static string SelectedBookEntryText { get; private set; } = "";
-        internal static MainServiceDatabase.Employee.EmployeeQualification SelectedEmployeeQualification { get; private set; } = MainServiceDatabase.Employee.EmployeeQualification.UNKNOWN;
+        internal static EmployeeQualification SelectedEmployeeQualification { get; private set; } = EmployeeQualification.UNKNOWN;
 
         #endregion
         #region Dialog-Events
@@ -86,7 +86,7 @@ namespace WachbuchApp
 
                 // Combo befüllen
                 comboQualiSelect.Items.Clear();
-                foreach (MainServiceDatabase.Employee.EmployeeQualification qualification in Enum.GetValues(typeof(MainServiceDatabase.Employee.EmployeeQualification)))
+                foreach (EmployeeQualification qualification in Enum.GetValues(typeof(EmployeeQualification)))
                 {
                     ComboBoxItem item = new() { Content = MainServiceHelper.GetQualificationTextFull(qualification), Tag = qualification, IsSelected = (qualification == employee.Qualification) };
                     comboQualiSelect.Items.Add(item);
@@ -259,7 +259,7 @@ namespace WachbuchApp
             bool isValid = true;
 
             // Wenn Qualifikation geändert werden soll, aber UNBEKANNT ausgewählt
-            if (SelectedAction == DialogEditEmployeeEditAction.EDIT_QUALIFICATION && (comboQualiSelect.SelectedItem == null || ((MainServiceDatabase.Employee.EmployeeQualification)((ComboBoxItem)comboQualiSelect.SelectedItem).Tag) == MainServiceDatabase.Employee.EmployeeQualification.UNKNOWN))
+            if (SelectedAction == DialogEditEmployeeEditAction.EDIT_QUALIFICATION && (comboQualiSelect.SelectedItem == null || ((EmployeeQualification)((ComboBoxItem)comboQualiSelect.SelectedItem).Tag) == EmployeeQualification.UNKNOWN))
             {
                 isValid = false;
                 btnSave.Content = MainServiceHelper.GetString("DialogEditEmployee_Dialog_QualiUnknown");
@@ -298,7 +298,7 @@ namespace WachbuchApp
 
                     // Derzeitige Wahl festlegen
                     if (comboQualiSelect.SelectedItem == null || _ownerService == null) { DialogResult = false; this.Close(); return; }
-                    SelectedEmployeeQualification = ((MainServiceDatabase.Employee.EmployeeQualification)((ComboBoxItem)comboQualiSelect.SelectedItem).Tag);
+                    SelectedEmployeeQualification = ((EmployeeQualification)((ComboBoxItem)comboQualiSelect.SelectedItem).Tag);
 
                     // Direkt speichern
                     _ownerService.Database.SetEmployeeQualification(_employeeId, SelectedEmployeeQualification);

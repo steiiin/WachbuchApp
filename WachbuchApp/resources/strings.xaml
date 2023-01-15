@@ -103,6 +103,7 @@
     <s:String x:Key="DialogAdminMenu_Title">Administration</s:String>
     <s:String x:Key="DialogAdminMenu_Action_MissingQuali">Fehlende Mitarbeiterqualifikationen eintragen</s:String>
     <s:String x:Key="DialogAdminMenu_Action_HardExit">Anwendung komplett beenden</s:String>
+    <s:String x:Key="DialogAdminMenu_Action_DeleteDatabase">Datenbank &amp; Konfiguration zurücksetzen</s:String>
     
     
     <!-- StandardTexte -->

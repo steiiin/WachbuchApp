@@ -254,6 +254,8 @@ namespace WachbuchApp
         public CredentialBlock AnonymousUsers;
 
         public List<Book> Books;
+        public BookStandards BookDefaults;
+
         public List<string> KnownShifts;
 
         // ########################################################################################
@@ -264,6 +266,7 @@ namespace WachbuchApp
             AnonymousUsers = new();
 
             Books = new();
+            BookDefaults = new();
             KnownShifts = new();
 
         }
@@ -288,7 +291,7 @@ namespace WachbuchApp
                                                  new BookShift("#R2T-Co#4342#", "#PR2T-Co#9386#", "Jh Cos 41/83-2", null, "rtw2-funk", "rtw2-keyplate", "rtw2-times", "rtw2-emp1", "rtw2-emp2", "rtw2-empH"),
                                                  new BookShift("#R1N-Co#4341#", "#PR1N-Co#9384#", "Jh Cos 41/83-1", null, "nrtw1-funk", "nrtw1-keyplate", "nrtw1-times", "nrtw1-emp1", "nrtw1-emp2", "nrtw1-empH")},
 
-                        new BookIds(4, new List<string>() { "#MDR#4259#", "#ID#4196#" })));
+                        new BookIds(4)));
 
             Books.Add(
                 new Book("RW Meißen", "docWachbuchMeissen.html", "doc-date",
@@ -318,8 +321,8 @@ namespace WachbuchApp
 
                                                  new BookShift("#RB-T#4332#", null, null, null, null, null, null, "rbt-emp1", "rbt-emp2", "rbt-empH"),
                                                  new BookShift("#RB-N#5337#", null, null, null, null, null, null, "rbn-emp1", "rbn-emp2", "rbn-empH")},
-                         
-                         null));
+
+                         new BookIds(7)));
 
             Books.Add(
                 new Book("NEF Meißen", "docWachbuchNefMeissen.html", "doc-date",
@@ -332,9 +335,19 @@ namespace WachbuchApp
                          
                          null));
 
+            // Wachbuch-Standards eintragen
+            BookDefaults = new(
+                new() { "#MDR#4259#", "#ID#4196#" },
+                new() { 5783, 5800 });
+
             // Bekannte Schichten löschen
             KnownShifts = new();
 
+        }
+
+        public void DeleteConfiguration()
+        {
+            System.IO.File.Delete(SAVEPATH);
         }
 
         // ########################################################################################
@@ -504,12 +517,47 @@ namespace WachbuchApp
         {
 
             public int MaxPlaces { get; set; }
-            public List<string> ConfigKeys { get; set; }
 
-            public BookIds(int maxPlaces, List<string> configKeys)
+            public BookIds(int maxPlaces)
             {
                 MaxPlaces = maxPlaces;
-                ConfigKeys = configKeys;
+            }
+
+        }
+
+        // ########################################################################################
+
+        public class BookStandards : IEquatable<BookStandards>
+        {
+
+            public List<string> IdKeys { get; set; }
+            public List<long> IdIgnoredEmployees { get; set; }
+
+            public BookStandards(List<string> idKeys, List<long> idIgnoredEmployees)
+            {
+                IdKeys = idKeys;
+                IdIgnoredEmployees = idIgnoredEmployees;
+            }
+            public BookStandards()
+            {
+                IdKeys = new();
+                IdIgnoredEmployees = new();
+            }
+
+            bool IEquatable<BookStandards>.Equals(BookStandards? other)
+            {
+                if (other == null) { return false; }
+                return IdKeys == other.IdKeys && IdIgnoredEmployees == other.IdIgnoredEmployees;
+            }
+
+            public override bool Equals(object? obj)
+            {
+                return ((IEquatable<BookStandards>)this).Equals(obj as BookStandards);
+            }
+
+            public override int GetHashCode()
+            {
+                return (IdKeys.GetHashCode() + IdIgnoredEmployees.GetHashCode()).GetHashCode();
             }
 
         }
@@ -594,19 +642,6 @@ namespace WachbuchApp
         public class Employee
         {
 
-            public enum EmployeeQualification
-            {
-                Azubi,
-                RH,
-                RS,
-                UNKNOWN,
-                RA,
-                NFS,
-                NA
-            }
-
-            // ####################################################################################
-
             [JsonProperty(PropertyName = "vId")]
             public long VivendiId { get; set; }
 
@@ -630,7 +665,7 @@ namespace WachbuchApp
                 FirstName = firstName;
                 LastName = lastName;
                 Qualification = EmployeeQualification.UNKNOWN;
-                AssignedStation = "RW Meissen";
+                AssignedStation = "RW Meißen";
             }
 
             // ####################################################################################
@@ -792,6 +827,13 @@ namespace WachbuchApp
 
         }
 
+        public void DeleteDatabase()
+        {
+
+            System.IO.File.Delete(SAVEPATH);
+
+        }
+
         // ############################################################################################
 
         public bool TestDate(DateTime date)
@@ -879,9 +921,9 @@ namespace WachbuchApp
         // ############################################################################################
 
         [JsonIgnore]
-        public List<long> GetUnknownEmployees => (from x in employeeDictionary where x.Value.Qualification == Employee.EmployeeQualification.UNKNOWN select x.Key).ToList();
+        public List<Employee> GetBulkEmployees => employeeDictionary.Values.ToList();
 
-        public void SetEmployeeQualification(long employeeId, Employee.EmployeeQualification newQualification)
+        public void SetEmployeeQualification(long employeeId, EmployeeQualification newQualification)
         {
             if (!employeeDictionary.ContainsKey(employeeId)) { return; }
             employeeDictionary[employeeId].Qualification = newQualification;
@@ -1207,29 +1249,29 @@ namespace WachbuchApp
         #endregion
         #region Convert 
 
-        public static string GetQualificationTextShort(MainServiceDatabase.Employee.EmployeeQualification qualification)
+        public static string GetQualificationTextShort(EmployeeQualification qualification)
         {
             return qualification switch
             {
-                MainServiceDatabase.Employee.EmployeeQualification.RH => "(RH)",
-                MainServiceDatabase.Employee.EmployeeQualification.RS => "(RS)",
-                MainServiceDatabase.Employee.EmployeeQualification.RA => "(RA)",
-                MainServiceDatabase.Employee.EmployeeQualification.NFS => "(NFS)",
-                MainServiceDatabase.Employee.EmployeeQualification.NA => "(NA)",
+                EmployeeQualification.RH => "(RH)",
+                EmployeeQualification.RS => "(RS)",
+                EmployeeQualification.RA => "(RA)",
+                EmployeeQualification.NFS => "(NFS)",
+                EmployeeQualification.NA => "(NA)",
                 _ => ""
             };
         }
 
-        public static string GetQualificationTextFull(MainServiceDatabase.Employee.EmployeeQualification qualification)
+        public static string GetQualificationTextFull(EmployeeQualification qualification)
         {
             return qualification switch
             {
-                MainServiceDatabase.Employee.EmployeeQualification.Azubi => "Azubi",
-                MainServiceDatabase.Employee.EmployeeQualification.RH => "Rettungshelfer",
-                MainServiceDatabase.Employee.EmployeeQualification.RS => "Rettungssanitäter",
-                MainServiceDatabase.Employee.EmployeeQualification.RA => "Rettungsassistent",
-                MainServiceDatabase.Employee.EmployeeQualification.NFS => "Notfallsanitäter",
-                MainServiceDatabase.Employee.EmployeeQualification.NA => "Notarzt",
+                EmployeeQualification.Azubi => "Azubi",
+                EmployeeQualification.RH => "Rettungshelfer",
+                EmployeeQualification.RS => "Rettungssanitäter",
+                EmployeeQualification.RA => "Rettungsassistent",
+                EmployeeQualification.NFS => "Notfallsanitäter",
+                EmployeeQualification.NA => "Notarzt",
                 _ => "Unbekannt"
             };
         }
@@ -1279,6 +1321,19 @@ namespace WachbuchApp
 
         #endregion
 
+    }
+    
+    // ############################################################################################
+
+    public enum EmployeeQualification
+    {
+        Azubi,
+        RH,
+        RS,
+        UNKNOWN,
+        RA,
+        NFS,
+        NA
     }
 
     #endregion

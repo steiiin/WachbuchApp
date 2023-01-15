@@ -56,20 +56,22 @@ namespace WachbuchApp
         private void BtnActionMissingQuali_Click(object sender, RoutedEventArgs e)
         {
 
-            foreach (var employeeId in _ownerService!.Database.GetUnknownEmployees)
+            DialogBulkEdit wnd = DialogBulkEdit.GetInstance(this, _ownerService!);
+            wnd.ShowDialog();
+
+        }
+
+        private void BtnActionDeleteDatabase_Click(object sender, RoutedEventArgs e)
+        {
+            if (_ownerService == null) { return; }
+            if (MessageBox.Show("Soll die Datenbank und Konfiguration zurückgesetzt werden?", "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
 
-                DialogEditEmployee editEmployee = DialogEditEmployee.GetInstance(this, _ownerService!, DialogEditEmployeeEditAction.EDIT_QUALIFICATION, EmployeeId: employeeId);
-                if (MainServiceHelper.ShowDialog(overlayDialog, editEmployee) != true)
-                {
+                _ownerService.Configuration.DeleteConfiguration();
+                _ownerService.Database.DeleteDatabase();
 
-                    if (MessageBox.Show("Mitarbeiter überspringen? Wenn nein, wird die Liste abgebrochen.", "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
-                    {
-                        MessageBox.Show("Stapelverarbeitung abgebrochen.");
-                        return;
-                    }
-
-                }
+                MessageBox.Show("Die Anwendung wird nun beendet. Starte sie erneut.");
+                Application.Current.Shutdown();
 
             }
 

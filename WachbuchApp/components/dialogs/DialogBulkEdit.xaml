@@ -1,0 +1,46 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="clr-namespace:WachbuchApp"
+        
+        xmlns:av="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="av" x:Class="WachbuchApp.DialogBulkEdit"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    Height="600" Width="800" 
+        AllowsTransparency="True" WindowStyle="None" Background="WhiteSmoke"
+        
+        Icon="./../../resources/ic_launcher.ico" ResizeMode="NoResize"
+        Loaded="Window_Loaded">
+    <Window.Resources>
+        <ObjectDataProvider 
+            x:Key="QualiValues" MethodName="GetValues" 
+            ObjectType="{x:Type sys:Enum}">
+
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="l:EmployeeQualification" />
+            </ObjectDataProvider.MethodParameters>
+
+        </ObjectDataProvider>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35" />
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Steuerung-Seite -->
+        <!-- Titlebar -->
+        <l:ControlWindowTitlebar x:Name="windowTitlebar" Title="{StaticResource MainWindow_Title}" ExitButtonClick="Window_Titlebar_Exited" Grid.ColumnSpan="3" />
+
+        <!-- Tabelle -->
+        <DataGrid Name="windowDatagrid" AlternatingRowBackground="WhiteSmoke" AlternationCount="2" AutoGenerateColumns="False" Grid.Row="1" ItemsSource="{Binding BulkEntries}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Mitarbeiter" IsReadOnly="True" Binding="{Binding EmployeeLabel}" />
+                <DataGridComboBoxColumn Header="Qualifikation" SelectedItemBinding="{Binding Quali, Mode=TwoWay}" ItemsSource="{Binding Source = {StaticResource QualiValues}}" />
+                <DataGridTextColumn Header="Standard-Wache" Binding="{Binding Station, Mode=TwoWay}" />
+            </DataGrid.Columns>
+        </DataGrid>
+        
+        <Border BorderBrush="#000000" BorderThickness="1,0,1,1" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1" Grid.RowSpan="3" />
+    </Grid>
+</Window>
