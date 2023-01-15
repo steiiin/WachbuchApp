@@ -39,7 +39,7 @@ namespace WachbuchApp
 
             // Vivendi-API vorbereiten
             api = new(Configuration.AnonymousUsers);
-
+            
             // BackgroundFetcher starten
             RunBackgroundFetch();
 
@@ -799,7 +799,8 @@ namespace WachbuchApp
                 try
                 {
 
-                    string json = MainServiceHelper.ReadEncryptedFile(SAVEPATH);
+                    using var handle = new StreamReader(SAVEPATH);
+                    string json = handle.ReadToEnd();
                     result = JsonConvert.DeserializeObject<MainServiceDatabase>(json, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.None });
 
                 }
@@ -823,7 +824,9 @@ namespace WachbuchApp
         {
 
             string json = JsonConvert.SerializeObject(this, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.None, Formatting = Formatting.None });
-            MainServiceHelper.WriteEncryptedFile(json, SAVEPATH);
+            
+            using var handle = new StreamWriter(SAVEPATH, false);
+            handle.Write(json);
 
         }
 
