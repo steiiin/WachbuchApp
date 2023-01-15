@@ -67,8 +67,8 @@ namespace WachbuchApp
             if (MessageBox.Show("Soll die Datenbank und Konfiguration zurückgesetzt werden?", "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
 
-                _ownerService.Configuration.DeleteConfiguration();
-                _ownerService.Database.DeleteDatabase();
+                MainServiceConfiguration.DeleteInstance();
+                MainServiceDatabase.DeleteInstance();
 
                 MessageBox.Show("Die Anwendung wird nun beendet. Starte sie erneut.");
                 Application.Current.Shutdown();

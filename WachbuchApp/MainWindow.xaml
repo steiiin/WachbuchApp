@@ -92,7 +92,7 @@
 
         <!-- Kalender -->
         <Viewbox Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="2">
-            <Calendar x:Name="calendarInput" SelectedDatesChanged="CalendarInput_SelectedDatesChanged" PreviewKeyDown="calendarInput_KeyDown" />
+            <Calendar x:Name="calendarInput" SelectedDatesChanged="CalendarInput_SelectedDatesChanged" PreviewKeyDown="CalendarInput_KeyDown" />
         </Viewbox>
         <Viewbox Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="2">
             <Calendar x:Name="monthInput" DisplayMode="Year" Visibility="Collapsed" DisplayDateChanged="MonthInput_DisplayDateChanged" DisplayModeChanged="MonthInput_DisplayModeChanged" SelectedDatesChanged="MonthInput_SelectedDatesChanged" />

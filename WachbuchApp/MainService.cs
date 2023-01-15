@@ -345,11 +345,6 @@ namespace WachbuchApp
 
         }
 
-        public void DeleteConfiguration()
-        {
-            System.IO.File.Delete(SAVEPATH);
-        }
-
         // ########################################################################################
 
         private static string SAVEPATH => MainServiceHelper.GetDbPath("configuration.json");
@@ -378,6 +373,11 @@ namespace WachbuchApp
                 result.SaveInstance();
             }
             return result;
+        }
+
+        public static void DeleteInstance()
+        {
+            System.IO.File.Delete(SAVEPATH);
         }
 
         public void SaveInstance()
@@ -820,6 +820,11 @@ namespace WachbuchApp
             return result;
         }
 
+        public static void DeleteInstance()
+        {
+            System.IO.File.Delete(SAVEPATH);
+        }
+
         public void SaveInstance()
         {
 
@@ -827,13 +832,6 @@ namespace WachbuchApp
             
             using var handle = new StreamWriter(SAVEPATH, false);
             handle.Write(json);
-
-        }
-
-        public void DeleteDatabase()
-        {
-
-            System.IO.File.Delete(SAVEPATH);
 
         }
 
@@ -1199,6 +1197,7 @@ namespace WachbuchApp
 
         public static void SetHtmlClassNoData(CefSharp.Wpf.ChromiumWebBrowser? host, string? htmlId)
         {
+
             if (host == null) { return; }
             if (string.IsNullOrEmpty(htmlId)) { return; }
 
@@ -1210,13 +1209,14 @@ namespace WachbuchApp
         }
         public static void RemoveHtmlClassNoData(CefSharp.Wpf.ChromiumWebBrowser? host, string? htmlId)
         {
+
             if (host == null) { return; }
             if (string.IsNullOrEmpty(htmlId)) { return; }
 
             CefSharp.WebBrowserExtensions.ExecuteScriptAsyncWhenPageLoaded(host,
                 "var cl = document.getElementsByClassName('" + htmlId + "');" +
                 "for (var i = 0; i < cl.length; i++)" +
-                "{ cl[i].className = cl[i].className.replace(' nodata', ''); }");
+                "{ cl[i].className = cl[i].className.replaceAll(' nodata', ''); }");
 
         }
 

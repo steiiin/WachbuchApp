@@ -11,7 +11,6 @@ namespace WachbuchApp
     {
 
         private MainService? _ownerService;
-        private DialogEditIdEditEntry? _idEntry;
         private long _employeeId;
 
         #region Dialog-Start
@@ -29,7 +28,6 @@ namespace WachbuchApp
             wnd.Owner = owner;
             wnd._ownerService = service;
             wnd._employeeId = EmployeeId;
-            wnd._idEntry = entry;
 
             // Statische Fenster-Eigenschaften zurücksetzen
             DialogEditID.SelectedAction = EditAction;

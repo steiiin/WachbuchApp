@@ -49,8 +49,6 @@ namespace WachbuchApp
                 entry.PropertyChanged += wnd.Entry_PropertyChanged;
                 wnd.BulkEntries.Add(entry);
             }
-            wnd.StationsItems = new List<string>((from x in service.Configuration.Books where x.IDs != null select x.StationName).ToList());
-
 
             return wnd;
         }
@@ -91,10 +89,6 @@ namespace WachbuchApp
 
         private void CalculateWindow()
         {
-
-            // ScaleFactor ermitteln
-            PresentationSource source = PresentationSource.FromVisual(this);
-            double scaleFactor = source.CompositionTarget.TransformToDevice.M11;
 
             // Abmessungen berechnen
             double WorkHeight = SystemParameters.WorkArea.Height;
@@ -150,17 +144,12 @@ namespace WachbuchApp
             public event PropertyChangedEventHandler? PropertyChanged;
             private void RaisePropertyChanged([CallerMemberName] string caller = "")
             {
-                if (PropertyChanged != null)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs(caller));
-                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(caller));
             }
 
         }
 
         public ObservableCollection<BulkEntry> BulkEntries { get; set; } = new();
-
-        public List<string> StationsItems { get; set; } = new();
 
         #endregion
 

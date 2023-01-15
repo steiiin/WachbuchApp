@@ -282,7 +282,7 @@ namespace WachbuchApp
                 // TokenExpired > Zeige Meldung an und wechsele dann auf CredentialError
                 case MessageState.ERROR_TOKENEXPIRED:
 
-                    DialogMessageBox msgExpired = DialogMessageBox.GetInstance(this, MainServiceHelper.GetString("MainWindow_ErrorExpired_Title"), MainServiceHelper.GetString("MainWindow_ErrorExpired_Message"), MessageBoxImage.Error, new(MainServiceHelper.GetString("Common_Button_Ok"), 
+                    DialogMessageBox msgExpired = DialogMessageBox.GetInstance(this, MainServiceHelper.GetString("MainWindow_ErrorExpired_Title"), MainServiceHelper.GetString("MainWindow_ErrorExpired_Message"), MessageBoxImage.Error, new(MainServiceHelper.GetString("Common_Button_Ok"),
                     () => { UpdateDate(ForceUpdate: true); return; }));
                     MainServiceHelper.ShowDialog(overlayDialog, msgExpired);
                     break;
@@ -498,6 +498,8 @@ namespace WachbuchApp
                     Application.Current.Dispatcher.Invoke(async () =>
                     {
 
+
+
                         if (calendarInput.SelectedDate == null ||
                             monthInput.SelectedDate == null) { return; }
 
@@ -568,7 +570,7 @@ namespace WachbuchApp
                         // Innendienst bearbeiten
                         case DocViewerEvent.EventAction.EDIT_ID:
 
-                            DialogEditIdEditEntry modEntry = ((BookHandler)currentHandler).GetModIdEntry(@event.LabelId, selectedDate) ?? 
+                            DialogEditIdEditEntry modEntry = ((BookHandler)currentHandler).GetModIdEntry(@event.LabelId, selectedDate) ??
                                 new(((BookHandler)currentHandler).GetLinkedId(@event.LabelId), "");
 
                             DialogEditID editID = DialogEditID.GetInstance(this, Service, modEntry, (modEntry.IsEmpty ? DialogEditIdEditAction.EDIT_ASSIGNEDSTATION : DialogEditIdEditAction.EDIT_ENTRY), @event.EmployeeId);
@@ -637,7 +639,7 @@ namespace WachbuchApp
             UpdateDate();
         }
 
-        private void calendarInput_KeyDown(object sender, KeyEventArgs e)
+        private void CalendarInput_KeyDown(object sender, KeyEventArgs e)
         {
             e.Handled = true;
         }
@@ -843,7 +845,7 @@ namespace WachbuchApp
 
             public override string Title => book.StationName;
 
-            public override bool IsModified => modVehicles.Any() || modEmployee.Any();
+            public override bool IsModified => modVehicles.Any() || modEmployee.Any() || modIDs.Any();
 
             public override void SwitchTo()
             {
@@ -871,6 +873,7 @@ namespace WachbuchApp
                     }
 
                     linkEmployee = new();
+                    linkIDs = new();
                     linkVehicles = new();
 
                     _updateLock = false;
@@ -885,7 +888,7 @@ namespace WachbuchApp
                 {
 
                     var shift = service.Database.GetShift(bookDate, bookShift.ConfigKey);
-                    
+
                     // Mitarbeiter suchen & zuweisen
                     var EmployeeList = service.Database.GetBoundEmployee(shift);
                     if (EmployeeList.Count == 0)
@@ -912,7 +915,7 @@ namespace WachbuchApp
                     {
                         SetEmployeeEntry(bookShift.LabelEmp1, bookDate, EmployeeList[0].EmployeeLabelText);
                         SetEmployeeEntry(bookShift.LabelEmp2, bookDate, EmployeeList[1].EmployeeLabelText);
-                        
+
                         linkEmployee.Add(bookShift.LabelEmp1!, EmployeeList[0].VivendiId);
                         linkEmployee.Add(bookShift.LabelEmp2!, EmployeeList[1].VivendiId);
 
@@ -928,7 +931,8 @@ namespace WachbuchApp
                     if (traineeEmp == null)
                     {
                         ClearEmployeeEntry(bookShift.LabelEmpH, bookDate);
-                    } else
+                    }
+                    else
                     {
                         SetEmployeeEntry(bookShift.LabelEmpH, bookDate, traineeEmp.EmployeeLabelText);
                         linkEmployee.Add(bookShift.LabelEmpH!, traineeEmp.VivendiId);
@@ -980,7 +984,8 @@ namespace WachbuchApp
                 }
 
                 // Innendienste eintragen
-                if (book.IDs != null) {
+                if (book.IDs != null)
+                {
 
                     // Aus Vivendi übernehmen
                     List<KeyValuePair<MainServiceDatabase.Shift, MainServiceDatabase.Employee>> idList = new();
@@ -998,7 +1003,7 @@ namespace WachbuchApp
                             if (emp.AssignedStation != book.StationName) { continue; }
 
                             idList.Add(new(shift, emp));
-                            
+
                         }
 
                     }
@@ -1007,9 +1012,10 @@ namespace WachbuchApp
                     for (int i = 1; i <= book.IDs.MaxPlaces; i++)
                     {
                         KeyValuePair<MainServiceDatabase.Shift, MainServiceDatabase.Employee>? entry = idList.Any() ? idList.First() : null;
-                        if (entry == null) {
+                        if (entry == null)
+                        {
                             ClearIdEntry(i, bookDate);
-                            continue; 
+                            continue;
                         }
 
                         SetIdEntry(i, bookDate, entry.Value.Key.ShortName, entry.Value.Value.EmployeeLabelText);
@@ -1582,7 +1588,7 @@ namespace WachbuchApp
                 // Evtl. TeamBuddy über öffentliche Schichtplan ziehen
                 var buddies = Service.Database.GetBuddyEmployee(Service.Database.GetShift(privShift.ShiftDate, privShift.ConfigKey), PrivateMasterData.EmployeeVivendiId);
                 string? buddyString = null;
-                if (buddies.Any() && !new List<string>() { "id", "rb-t", "rb-n" }.Contains(privShift.ShortName.ToLower())) 
+                if (buddies.Any() && !new List<string>() { "id", "rb-t", "rb-n" }.Contains(privShift.ShortName.ToLower()))
                 {
                     if (buddies.Count == 1)
                     {
