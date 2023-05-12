@@ -99,9 +99,6 @@ namespace WachbuchApp
             // Evtl. abmelden
             PrivateModeLogout();
 
-            // Private Daten löschen
-            Service.Database.ClearPrivateCache();
-
             // Fenster ausblenden
             Opacity = 0;
             ShowInTaskbar = false;
@@ -887,39 +884,52 @@ namespace WachbuchApp
                 foreach (var bookShift in book.Shifts)
                 {
 
-                    var shift = service.Database.GetShift(bookDate, bookShift.ConfigKey);
+                    List<MainServiceDatabase.Employee> employeeList = new();
+                    MainServiceDatabase.Shift? firstShift = null;
+                    bool noShiftFound = true;
+
+                    foreach (var thisKey in bookShift.ConfigKey)
+                    {
+
+                        var dbShift = service.Database.GetShift(bookDate, thisKey);
+                        if (dbShift != null) { noShiftFound = false; } else { continue; }
+                        if (firstShift == null) { firstShift = dbShift; }
+
+                        var thisEmployees = service.Database.GetBoundEmployee(dbShift);
+                        employeeList.AddRange(thisEmployees);
+
+                    }
 
                     // Mitarbeiter suchen & zuweisen
-                    var EmployeeList = service.Database.GetBoundEmployee(shift);
-                    if (EmployeeList.Count == 0)
+                    if (employeeList.Count == 0)
                     {
                         ClearEmployeeEntry(bookShift.LabelEmp1, bookDate);
                         ClearEmployeeEntry(bookShift.LabelEmp2, bookDate);
                     }
-                    else if (EmployeeList.Count == 1)
+                    else if (employeeList.Count == 1)
                     {
-                        SetEmployeeEntry(bookShift.LabelEmp1!, bookDate, EmployeeList[0].EmployeeLabelText);
+                        SetEmployeeEntry(bookShift.LabelEmp1!, bookDate, employeeList[0].EmployeeLabelText);
                         ClearEmployeeEntry(bookShift.LabelEmp2, bookDate);
 
-                        linkEmployee.Add(bookShift.LabelEmp1!, EmployeeList[0].VivendiId);
+                        linkEmployee.Add(bookShift.LabelEmp1!, employeeList[0].VivendiId);
                     }
-                    else if (EmployeeList.Count == 2)
+                    else if (employeeList.Count == 2)
                     {
-                        SetEmployeeEntry(bookShift.LabelEmp1, bookDate, EmployeeList[0].EmployeeLabelText);
-                        SetEmployeeEntry(bookShift.LabelEmp2, bookDate, EmployeeList[1].EmployeeLabelText);
+                        SetEmployeeEntry(bookShift.LabelEmp1, bookDate, employeeList[0].EmployeeLabelText);
+                        SetEmployeeEntry(bookShift.LabelEmp2, bookDate, employeeList[1].EmployeeLabelText);
 
-                        linkEmployee.Add(bookShift.LabelEmp1!, EmployeeList[0].VivendiId);
-                        linkEmployee.Add(bookShift.LabelEmp2!, EmployeeList[1].VivendiId);
+                        linkEmployee.Add(bookShift.LabelEmp1!, employeeList[0].VivendiId);
+                        linkEmployee.Add(bookShift.LabelEmp2!, employeeList[1].VivendiId);
                     }
                     else
                     {
-                        SetEmployeeEntry(bookShift.LabelEmp1, bookDate, EmployeeList[0].EmployeeLabelText);
-                        SetEmployeeEntry(bookShift.LabelEmp2, bookDate, EmployeeList[1].EmployeeLabelText);
+                        SetEmployeeEntry(bookShift.LabelEmp1, bookDate, employeeList[0].EmployeeLabelText);
+                        SetEmployeeEntry(bookShift.LabelEmp2, bookDate, employeeList[1].EmployeeLabelText);
 
-                        linkEmployee.Add(bookShift.LabelEmp1!, EmployeeList[0].VivendiId);
-                        linkEmployee.Add(bookShift.LabelEmp2!, EmployeeList[1].VivendiId);
+                        linkEmployee.Add(bookShift.LabelEmp1!, employeeList[0].VivendiId);
+                        linkEmployee.Add(bookShift.LabelEmp2!, employeeList[1].VivendiId);
 
-                        if (EmployeeList.Count > 3)
+                        if (employeeList.Count > 3)
                         {
                             AppLog.Error(MainServiceHelper.GetString("MainWindow_BookHandler_WarnExceed"), bookDate.ToShortDateString() + "##" + bookShift.ConfigKey);
                         }
@@ -939,19 +949,19 @@ namespace WachbuchApp
                     }
 
                     // Wenn keine Schicht gefunden
-                    if (shift == null)
+                    if (noShiftFound || firstShift == null)
                     {
 
-                        MainServiceHelper.ClearHtmlInnerText(host, bookShift.LabelFunk);
-                        MainServiceHelper.ClearHtmlInnerText(host, bookShift.LabelKeyplate);
-                        MainServiceHelper.ClearHtmlInnerText(host, bookShift.LabelTimes);
+                        //MainServiceHelper.ClearHtmlInnerText(host, bookShift.LabelFunk);
+                        //MainServiceHelper.ClearHtmlInnerText(host, bookShift.LabelKeyplate);
+                        //MainServiceHelper.ClearHtmlInnerText(host, bookShift.LabelTimes);
 
-                        MainServiceHelper.SetHtmlClassNoData(host, bookShift.LabelEmpty);
+                        //MainServiceHelper.SetHtmlClassNoData(host, bookShift.LabelEmpty);
                         continue;
                     }
                     else
                     {
-                        MainServiceHelper.RemoveHtmlClassNoData(host, bookShift.LabelEmpty);
+                        //MainServiceHelper.RemoveHtmlClassNoData(host, bookShift.LabelEmpty);
                     }
 
                     // Fahrzeugdaten zuweisen
@@ -978,7 +988,7 @@ namespace WachbuchApp
                     // Dienstzeiten zuweisen
                     if (bookShift.LabelTimes != null)
                     {
-                        MainServiceHelper.SetHtmlInnerText(host, bookShift.LabelTimes, string.Format("{0} - {1}", shift.TimeStart.ToString("HH:mm"), shift.TimeEnd.ToString("HH:mm")));
+                        MainServiceHelper.SetHtmlInnerText(host, bookShift.LabelTimes, string.Format("{0} - {1}", firstShift!.TimeStart.ToString("HH:mm"), firstShift!.TimeEnd.ToString("HH:mm")));
                     }
 
                 }
@@ -1498,6 +1508,9 @@ namespace WachbuchApp
         }
         private void PrivateModeLogout()
         {
+
+            // Private Daten löschen
+            Service.Database.ClearPrivateCache();
 
             btnExportPrivate.Visibility = Visibility.Visible;
             btnLogoutPrivate.Visibility = Visibility.Collapsed;

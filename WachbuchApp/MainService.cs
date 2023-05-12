@@ -65,7 +65,7 @@ namespace WachbuchApp
                 {
 
                     // Verbinden
-                    var response = await api.FetchPublicFromTo(DateTime.Now, DateTime.Now.AddDays(31));
+                    var response = await api.FetchPublicFromTo(DateTime.Now, DateTime.Now.AddDays(31), conf.BookDefaults.PublicIgnoredConfigKeys);
                     if (response.IsFailed)
                     {
 
@@ -127,7 +127,7 @@ namespace WachbuchApp
             if (!dataAvailable || dataOutdated)
             {
 
-                var response = await api.FetchPublicFromTo(date, date);
+                var response = await api.FetchPublicFromTo(date, date, conf.BookDefaults.PublicIgnoredConfigKeys);
                 if (response.IsFailed)
                 {
 
@@ -173,7 +173,7 @@ namespace WachbuchApp
             if (!publicDataAvailable || publicDataOutdated)
             {
 
-                var response = await api.FetchPublicFromTo(dateFrom, dateTo);
+                var response = await api.FetchPublicFromTo(dateFrom, dateTo, conf.BookDefaults.PublicIgnoredConfigKeys);
                 if (response.IsFailed)
                 {
 
@@ -287,9 +287,9 @@ namespace WachbuchApp
                                                    new BookVehicle("Jh Mei 41/83-4", "DD-MH 8304"),
                                                    new BookVehicle("Jh Mei 41/83-5", "DD-MH 8305")},
 
-                        new List<BookShift>() { new BookShift("#R1T-Co#4340#", "#PR1T-Co#9385#", "Jh Cos 41/83-1", null, "rtw1-funk", "rtw1-keyplate", "rtw1-times", "rtw1-emp1", "rtw1-emp2", "rtw1-empH"),
-                                                 new BookShift("#R2T-Co#4342#", "#PR2T-Co#9386#", "Jh Cos 41/83-2", null, "rtw2-funk", "rtw2-keyplate", "rtw2-times", "rtw2-emp1", "rtw2-emp2", "rtw2-empH"),
-                                                 new BookShift("#R1N-Co#4341#", "#PR1N-Co#9384#", "Jh Cos 41/83-1", null, "nrtw1-funk", "nrtw1-keyplate", "nrtw1-times", "nrtw1-emp1", "nrtw1-emp2", "nrtw1-empH")},
+                        new List<BookShift>() { new BookShift(new() { "#R1T-Co#4340#" }, "#PR1T-Co#9385#" , "Jh Cos 41/83-1", null, "rtw1-funk", "rtw1-keyplate", "rtw1-times", "rtw1-emp1", "rtw1-emp2", "rtw1-empH"),
+                                                 new BookShift(new() { "#R2T-Co#4342#" }, "#PR2T-Co#9386#" , "Jh Cos 41/83-2", null, "rtw2-funk", "rtw2-keyplate", "rtw2-times", "rtw2-emp1", "rtw2-emp2", "rtw2-empH"),
+                                                 new BookShift(new() { "#R1N-Co#4341#" }, "#PR1N-Co#9384#" , "Jh Cos 41/83-1", null, "nrtw1-funk", "nrtw1-keyplate", "nrtw1-times", "nrtw1-emp1", "nrtw1-emp2", "nrtw1-empH")},
 
                         new BookIds(4)));
 
@@ -309,18 +309,18 @@ namespace WachbuchApp
                                                    new BookVehicle("Jh Mei 41/85-4", "DD-MH 8504"),
                                                    new BookVehicle("Jh Mei 41/85-5", "DD-MH 8508")},
 
-                         new List<BookShift>() { new BookShift("#R1T#4334#", "#PR1T#9382#", "Jh Mei 41/83-1", null, "rtw1-funk", "rtw1-keyplate", "rtw1-times", "rtw1-emp1", "rtw1-emp2", "rtw1-empH"),
-                                                 new BookShift("#R2T#4337#", "#PR2T#9388#", "Jh Mei 41/83-2", null, "rtw2-funk", "rtw2-keyplate", "rtw2-times", "rtw2-emp1", "rtw2-emp2", "rtw2-empH"),
-                                                 new BookShift("#R3T#4339#", "#PR3T#9387#", "Jh Mei 41/83-3", "rtw3-empty", "rtw3-funk", "rtw3-keyplate", "rtw3-times", "rtw3-emp1", "rtw3-emp2", "rtw3-empH"),
-                                                 new BookShift("#K1#4336#", null, "Jh Mei 41/85-1", "ktw1-empty", "ktw1-funk", "ktw1-keyplate", "ktw1-times", "ktw1-emp1", "ktw1-emp2", "ktw1-empH"),
-                                                 new BookShift("#K2#4343#", null, "Jh Mei 41/85-2", "ktw2-empty", "ktw2-funk", "ktw2-keyplate", "ktw2-times", "ktw2-emp1", "ktw2-emp2", "ktw2-empH"),
-                                                 new BookShift("#K3#4344#", null, "Jh Mei 41/85-3", "ktw3-empty", "ktw3-funk", "ktw3-keyplate", "ktw3-times", "ktw3-emp1", "ktw3-emp2", "ktw3-empH"),
+                         new List<BookShift>() { new BookShift(new() {"#R1T#4334#" }, "#PR1T#9382#" , "Jh Mei 41/83-1", null, "rtw1-funk", "rtw1-keyplate", "rtw1-times", "rtw1-emp1", "rtw1-emp2", "rtw1-empH"),
+                                                 new BookShift(new() {"#R2T#4337#" }, "#PR2T#9388#" , "Jh Mei 41/83-2", null, "rtw2-funk", "rtw2-keyplate", "rtw2-times", "rtw2-emp1", "rtw2-emp2", "rtw2-empH"),
+                                                 new BookShift(new() {"#R3T#4339#" }, "#PR3T#9387#" , "Jh Mei 41/83-3", "rtw3-empty", "rtw3-funk", "rtw3-keyplate", "rtw3-times", "rtw3-emp1", "rtw3-emp2", "rtw3-empH"),
+                                                 new BookShift(new() {"#K1#4336#" }, null, "Jh Mei 41/85-1", "ktw1-empty", "ktw1-funk", "ktw1-keyplate", "ktw1-times", "ktw1-emp1", "ktw1-emp2", "ktw1-empH"),
+                                                 new BookShift(new() {"#K2#4343#" }, null, "Jh Mei 41/85-2", "ktw2-empty", "ktw2-funk", "ktw2-keyplate", "ktw2-times", "ktw2-emp1", "ktw2-emp2", "ktw2-empH"),
+                                                 new BookShift(new() {"#K3#4344#", "#K3-Desi#6301#" }, null, "Jh Mei 41/85-3", "ktw3-empty", "ktw3-funk", "ktw3-keyplate", "ktw3-times", "ktw3-emp1", "ktw3-emp2", "ktw3-empH"),
 
-                                                 new BookShift("#R1N#4335#", "#PR1N#9381#", "Jh Mei 41/83-1", null, "nrtw1-funk", "nrtw1-keyplate", "nrtw1-times", "nrtw1-emp1", "nrtw1-emp2", "nrtw1-empH"),
-                                                 new BookShift("#R2N#4338#", "#PR2N#9383#", "Jh Mei 41/83-2", null, "nrtw2-funk", "nrtw2-keyplate", "nrtw2-times", "nrtw2-emp1", "nrtw2-emp2", "nrtw2-empH"),
+                                                 new BookShift(new() {"#R1N#4335#" }, "#PR1N#9381#" , "Jh Mei 41/83-1", null, "nrtw1-funk", "nrtw1-keyplate", "nrtw1-times", "nrtw1-emp1", "nrtw1-emp2", "nrtw1-empH"),
+                                                 new BookShift(new() {"#R2N#4338#" }, "#PR2N#9383#" , "Jh Mei 41/83-2", null, "nrtw2-funk", "nrtw2-keyplate", "nrtw2-times", "nrtw2-emp1", "nrtw2-emp2", "nrtw2-empH"),
 
-                                                 new BookShift("#RB-T#4332#", null, null, null, null, null, null, "rbt-emp1", "rbt-emp2", "rbt-empH"),
-                                                 new BookShift("#RB-N#5337#", null, null, null, null, null, null, "rbn-emp1", "rbn-emp2", "rbn-empH")},
+                                                 new BookShift(new() {"#RB-T#4332#" }, null, null, null, null, null, null, "rbt-emp1", "rbt-emp2", "rbt-empH"),
+                                                 new BookShift(new() {"#RB-N#5337#" }, null, null, null, null, null, null, "rbn-emp1", "rbn-emp2", "rbn-empH")},
 
                          new BookIds(7)));
 
@@ -330,15 +330,18 @@ namespace WachbuchApp
                          new List<BookVehicle>() { new BookVehicle("Jh Mei 41/82-1", "MEI-RK 182"),
                                                    new BookVehicle("Jh Mei 41/82-2", "DD-MH 822")},
 
-                         new List<BookShift>() { new BookShift("#NT#4330#", null, "Jh Mei 41/82-1", null, "nef1-funk", "nef1-keyplate", "nef1-times", "nef1-emp1", "nef1-empH", null),
-                                                 new BookShift("#NN#4331#", null, "Jh Mei 41/82-1", null, "nnef1-funk", "nnef1-keyplate", "nef1-times", "nnef1-emp1", "nnef1-empH", null)},
+                         new List<BookShift>() { new BookShift(new() { "#NT#4330#" }, null, "Jh Mei 41/82-1", null, "nef1-funk", "nef1-keyplate", "nef1-times", "nef1-emp1", "nef1-empH", null),
+                                                 new BookShift(new() { "#NN#4331#" }, null, "Jh Mei 41/82-1", null, "nnef1-funk", "nnef1-keyplate", "nef1-times", "nnef1-emp1", "nnef1-empH", null)},
                          
                          null));
 
             // Wachbuch-Standards eintragen
             BookDefaults = new(
                 new() { "#MDR#4259#", "#ID#4196#" },
-                new() { 5783, 5800 });
+                new() { 5783, 5800 },
+                new() { "#PG#4237#" /* Personalgespräch */,
+                        "#DV#4199#" /* Dienstversammlung */
+                });
 
             // Bekannte Schichten löschen
             KnownShifts = new();
@@ -463,26 +466,8 @@ namespace WachbuchApp
         public class BookShift
         {
 
-            public string ConfigKey { get; set; }
+            public List<string> ConfigKey { get; set; }
             public string? TraineeKey { get; set; }
-
-            [JsonIgnore]
-            public long VivendiId
-            {
-                get
-                {
-                    // "#asdas#1231#"
-                    if (string.IsNullOrWhiteSpace(ConfigKey) ||
-                        !ConfigKey.Contains('#')) { return -1; }
-                    var split = ConfigKey.Split('#');
-                    if (split.Length == 4)
-                    {
-                        if (long.TryParse(split[2], out long result)) { return result; }
-                    }
-                    return -1;
-
-                }
-            }
 
             [JsonIgnore]
             public string LabelVehicleKey => LabelFunk == null ? "" : LabelFunk.Split('-')[0];
@@ -497,7 +482,7 @@ namespace WachbuchApp
             public string? LabelEmp2 { get; set; }
             public string? LabelEmpH { get; set; }
 
-            public BookShift(string configKey, string? traineeKey, string? defaultVehicle, string? labelEmpty, string? labelFunk, string? labelKeyplate, string? labelTimes, string? labelEmp1, string? labelEmp2, string? labelEmpH)
+            public BookShift(List<string> configKey, string? traineeKey, string? defaultVehicle, string? labelEmpty, string? labelFunk, string? labelKeyplate, string? labelTimes, string? labelEmp1, string? labelEmp2, string? labelEmpH)
             {
                 ConfigKey = configKey;
                 TraineeKey = traineeKey;
@@ -532,16 +517,19 @@ namespace WachbuchApp
 
             public List<string> IdKeys { get; set; }
             public List<long> IdIgnoredEmployees { get; set; }
+            public List<string> PublicIgnoredConfigKeys { get; set; }
 
-            public BookStandards(List<string> idKeys, List<long> idIgnoredEmployees)
+            public BookStandards(List<string> idKeys, List<long> idIgnoredEmployees, List<string> publicIgnored)
             {
                 IdKeys = idKeys;
                 IdIgnoredEmployees = idIgnoredEmployees;
+                PublicIgnoredConfigKeys = publicIgnored;
             }
             public BookStandards()
             {
                 IdKeys = new();
                 IdIgnoredEmployees = new();
+                PublicIgnoredConfigKeys = new();
             }
 
             bool IEquatable<BookStandards>.Equals(BookStandards? other)
@@ -853,6 +841,16 @@ namespace WachbuchApp
         {
             var query = (from x in shiftDictionary.Values where (x.ShiftDate.Date == date.Date) orderby x.FetchedDateTime ascending select x.FetchedDateTime).FirstOrDefault(DateTime.MinValue);
             return query;
+        }
+
+        public void MarkOutdated()
+        {
+
+            foreach (var key in shiftDictionary.Keys)
+            {
+                shiftDictionary[key].FetchedDateTime = DateTime.MinValue;
+            }
+
         }
 
         // ############################################################################################
@@ -1813,7 +1811,7 @@ namespace WachbuchApp
                 var response = await Login(credential);
 
                 if (response == VivendiApiState.SUCCESSFUL) { latestUsername = credential.Username; break; }
-                else if (response == VivendiApiState.CREDENTIALS_ERROR) { CredentialBlock.RemoveCredential(credential.Username); }
+                else if (response == VivendiApiState.CREDENTIALS_ERROR) { CredentialBlock.RemoveCredential(credential.Username); if (isTesting) { return VivendiApiState.CREDENTIALS_ERROR; } }
                 else if (response == VivendiApiState.CONNECTION_ERROR) { return VivendiApiState.CONNECTION_ERROR; }
                 else { return VivendiApiState.SERVER_APP_ERROR; }
 
@@ -1843,7 +1841,7 @@ namespace WachbuchApp
 
         }
 
-        public async Task<VivendiApiFetchResponse> FetchPublicFromTo(DateTime dateFrom, DateTime dateTo)
+        public async Task<VivendiApiFetchResponse> FetchPublicFromTo(DateTime dateFrom, DateTime dateTo, List<string> publicIgnored)
         {
 
             if (client == null) { NewConnection(); }
@@ -1899,7 +1897,10 @@ namespace WachbuchApp
                                     jD.DpDienste.Count == 0) { continue; }
 
                                 // Dienst wählen, der zuletzt aktualisiert wurde; wenn dort keine Daten abbrechen
-                                var current = (from x in jD.DpDienste orderby x.GeaendertAm descending select x).First();
+                                var currentList = from x in jD.DpDienste where (x.Dienst != null && !publicIgnored.Contains(string.Format("#{0}#{1}#", x.Dienst.ShortName, x.Dienst.Id))) orderby x.GeaendertAm descending select x;
+                                if (!currentList.Any()) { continue; }
+
+                                var current = currentList.First();
                                 if (current.Bereich == null ||
                                     current.Zeiten == null ||
                                     current.Zeiten.Count == 0 ||

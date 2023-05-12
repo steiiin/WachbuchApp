@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>resources\ic_launcher.ico</ApplicationIcon>
-    <Configurations>Debug;Release;git-Main</Configurations>
+    <Configurations>Debug;Release;git-Main;WBrel-Meissen;WBrel-Coswig</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='git-Main|AnyCPU'">

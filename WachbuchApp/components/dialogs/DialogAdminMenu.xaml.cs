@@ -61,14 +61,45 @@ namespace WachbuchApp
 
         }
 
-        private void BtnActionDeleteDatabase_Click(object sender, RoutedEventArgs e)
+        private void BtnActionDeleteConfig_Click(object sender, RoutedEventArgs e)
         {
             if (_ownerService == null) { return; }
-            if (MessageBox.Show("Soll die Datenbank und Konfiguration zurückgesetzt werden?", "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            if (MessageBox.Show("Soll die Konfiguration zurückgesetzt werden?", "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
 
                 MainServiceConfiguration.DeleteInstance();
+
+                MessageBox.Show("Die Anwendung wird nun beendet. Starte sie erneut.");
+                Application.Current.Shutdown();
+
+            }
+
+        }
+
+
+        private void BtnActionDeleteDatabase_Click(object sender, RoutedEventArgs e)
+        {
+            if (_ownerService == null) { return; }
+            if (MessageBox.Show("Soll die Datenbank zurückgesetzt werden?", "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+
                 MainServiceDatabase.DeleteInstance();
+
+                MessageBox.Show("Die Anwendung wird nun beendet. Starte sie erneut.");
+                Application.Current.Shutdown();
+
+            }
+
+        }
+
+        private void BtnActionMarkOutdated_Click(object sender, RoutedEventArgs e)
+        {
+            if (_ownerService == null) { return; }
+            if (MessageBox.Show("Soll die Datenbank-Zeit zurückgesetzt werden?", "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+
+                _ownerService.Database.MarkOutdated();
+                _ownerService.Database.SaveInstance();
 
                 MessageBox.Show("Die Anwendung wird nun beendet. Starte sie erneut.");
                 Application.Current.Shutdown();

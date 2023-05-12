@@ -10,6 +10,8 @@ Global
 		Debug|Any CPU = Debug|Any CPU
 		git-Main|Any CPU = git-Main|Any CPU
 		Release|Any CPU = Release|Any CPU
+		WBrel-Coswig|Any CPU = WBrel-Coswig|Any CPU
+		WBrel-Meissen|Any CPU = WBrel-Meissen|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B9E396E3-0E2F-475D-8251-E37FB2F21C5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -18,6 +20,10 @@ Global
 		{B9E396E3-0E2F-475D-8251-E37FB2F21C5B}.git-Main|Any CPU.Build.0 = git-Main|Any CPU
 		{B9E396E3-0E2F-475D-8251-E37FB2F21C5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9E396E3-0E2F-475D-8251-E37FB2F21C5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9E396E3-0E2F-475D-8251-E37FB2F21C5B}.WBrel-Coswig|Any CPU.ActiveCfg = WBrel-Coswig|Any CPU
+		{B9E396E3-0E2F-475D-8251-E37FB2F21C5B}.WBrel-Coswig|Any CPU.Build.0 = WBrel-Coswig|Any CPU
+		{B9E396E3-0E2F-475D-8251-E37FB2F21C5B}.WBrel-Meissen|Any CPU.ActiveCfg = WBrel-Meissen|Any CPU
+		{B9E396E3-0E2F-475D-8251-E37FB2F21C5B}.WBrel-Meissen|Any CPU.Build.0 = WBrel-Meissen|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
